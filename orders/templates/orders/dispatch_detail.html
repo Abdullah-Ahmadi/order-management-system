@@ -1,0 +1,684 @@
+{% extends "orders/base.html" %}
+
+
+{% block title %}
+Dispatch {{ dispatch.dispatch_number }} | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            Dispatch {{ dispatch.dispatch_number }}
+        </h1>
+
+        <p class="page-subtitle">
+            Dispatch details, products, transport information, and related documents.
+        </p>
+
+    </div>
+
+
+    <div class="button-row">
+
+        <a
+            href="{% url 'orders:dispatch_edit' dispatch.id %}"
+            class="button button-secondary"
+        >
+            Edit Dispatch
+        </a>
+
+
+        <a
+            href="{% url 'orders:dispatch_print' dispatch.id %}"
+            class="button button-primary"
+            target="_blank"
+        >
+            Print Dispatch
+        </a>
+
+
+        <a
+            href="{% url 'orders:order_detail' dispatch.order.id %}"
+            class="button button-secondary"
+        >
+            Back to Order
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =====================================================
+     DISPATCH INFORMATION
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Dispatch Information
+    </h2>
+
+
+    <div class="detail-grid">
+
+
+        <!-- DISPATCH NUMBER -->
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Dispatch Number
+            </span>
+
+            <span class="detail-value">
+                <strong>
+                    {{ dispatch.dispatch_number }}
+                </strong>
+            </span>
+
+        </div>
+
+
+        <!-- DISPATCH DATE -->
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Dispatch Date
+            </span>
+
+            <span class="detail-value">
+                <strong>
+                    {{ dispatch.dispatch_date|date:"d-M-y" }}
+                </strong>
+            </span>
+
+        </div>
+
+
+        <!-- ORDER NUMBER -->
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Order Number
+            </span>
+
+            <span class="detail-value">
+
+                <a
+                    href="{% url 'orders:order_detail' dispatch.order.id %}"
+                >
+                    {{ dispatch.order.serial_number }}
+                </a>
+
+            </span>
+
+        </div>
+
+
+        <!-- ORDER DATE -->
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Order Date
+            </span>
+
+            <span class="detail-value">
+                {{ dispatch.order.order_date|date:"d-M-y" }}
+            </span>
+
+        </div>
+
+
+        <!-- CUSTOMER -->
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Customer
+            </span>
+
+            <span class="detail-value">
+                {{ dispatch.order.distributor.full_name }}
+            </span>
+
+        </div>
+
+
+        <!-- CUSTOMER ID -->
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Customer ID
+            </span>
+
+            <span class="detail-value">
+                {{ dispatch.order.distributor.customer_code }}
+            </span>
+
+        </div>
+
+
+        <!-- TERRITORY -->
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Province / Territory
+            </span>
+
+            <span class="detail-value">
+                {{ dispatch.order.distributor.territory.name }}
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     TRANSPORT INFORMATION
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Transport Information
+    </h2>
+
+
+    <div class="detail-grid">
+
+
+        <!-- DRIVER -->
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Driver
+            </span>
+
+            <span class="detail-value">
+
+                {% if dispatch.driver %}
+
+                    {{ dispatch.driver.full_name }}
+
+                    <span class="help-text">
+                        ({{ dispatch.driver.driver_code }}) — Company
+                    </span>
+
+                {% elif dispatch.external_driver_name %}
+
+                    {{ dispatch.external_driver_name }}
+
+                    <span class="help-text">
+                        — External
+                    </span>
+
+                {% else %}
+
+                    <span class="help-text">
+                        Not specified
+                    </span>
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+        <!-- TRUCK -->
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Truck
+            </span>
+
+            <span class="detail-value">
+
+                {% if dispatch.truck %}
+
+                    {{ dispatch.truck.plate_number }}
+
+                    {% if dispatch.truck.model %}
+
+                        <span class="help-text">
+                            — {{ dispatch.truck.model }}
+                        </span>
+
+                    {% endif %}
+
+                {% elif dispatch.external_truck_plate %}
+
+                    {{ dispatch.external_truck_plate }}
+
+                    <span class="help-text">
+                        — External
+                    </span>
+
+                {% else %}
+
+                    <span class="help-text">
+                        Not specified
+                    </span>
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     DISPATCH SUMMARY
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Dispatch Summary
+    </h2>
+
+
+    <div class="summary-grid">
+
+
+        <!-- WEIGHT -->
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Weight
+            </span>
+
+            <span class="summary-value">
+                {{ dispatch.total_weight_tons|floatformat:2 }} tons
+            </span>
+
+        </div>
+
+
+        <!-- FREIGHT CATEGORY -->
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Freight Category
+            </span>
+
+            <span class="summary-value">
+                {{ dispatch.freight_category }}
+            </span>
+
+        </div>
+
+
+        <!-- FREIGHT RATE -->
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Freight / Ton
+            </span>
+
+            <span class="summary-value">
+                AFN {{ dispatch.freight_rate_per_ton|floatformat:2 }}
+            </span>
+
+        </div>
+
+
+        <!-- TOTAL FREIGHT -->
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Total Freight
+            </span>
+
+            <span class="summary-value">
+                AFN {{ dispatch.total_freight|floatformat:2 }}
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     PRODUCTS
+===================================================== -->
+
+<section class="card">
+
+    <div class="page-header">
+
+        <div>
+
+            <h2 class="card-title">
+                Products
+            </h2>
+
+            <p class="page-subtitle">
+                Products and quantities included in this dispatch.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if dispatch.items.all %}
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>SKU</th>
+                        <th>Product</th>
+                        <th>Package</th>
+                        <th>Size</th>
+                        <th>Ordered</th>
+                        <th>Dispatched</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for item in dispatch.items.all %}
+
+                        <tr>
+
+
+                            <!-- ROW NUMBER -->
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+
+                            <!-- SKU -->
+
+                            <td>
+                                {{ item.order_item.product.sku }}
+                            </td>
+
+
+                            <!-- PRODUCT -->
+
+                            <td>
+                                {{ item.order_item.product.name }}
+                            </td>
+
+
+                            <!-- PACKAGE -->
+
+                            <td>
+                                {{ item.order_item.product.get_package_type_display }}
+                            </td>
+
+
+                            <!-- SIZE -->
+
+                            <td>
+                                {{ item.order_item.product.size }}
+                            </td>
+
+
+                            <!-- ORDERED -->
+
+                            <td>
+                                {{ item.order_item.quantity }}
+                            </td>
+
+
+                            <!-- DISPATCHED -->
+
+                            <td>
+                                <strong>
+                                    {{ item.quantity }}
+                                </strong>
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <p>
+                No products are included in this dispatch.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+
+<!-- =====================================================
+     PURCHASE REQUEST
+===================================================== -->
+
+<section class="card">
+
+    <div class="page-header">
+
+        <div>
+
+            <h2 class="card-title">
+                Purchase Request
+            </h2>
+
+            <p class="page-subtitle">
+                The Purchase Request combines the dispatch information belonging to this order.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="button-row">
+
+        <a
+            href="{% url 'orders:purchase_request_detail' dispatch.order.id %}"
+            class="button button-secondary"
+        >
+            View Purchase Request
+        </a>
+
+
+        <a
+            href="{% url 'orders:purchase_request_print' dispatch.order.id %}"
+            class="button button-secondary"
+            target="_blank"
+        >
+            Print Purchase Request
+        </a>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     DELIVERY NOTE
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Delivery Note
+    </h2>
+
+
+    {% if delivery_note %}
+
+        <p>
+            A Delivery Note has been created for this shipment.
+            The printed document prepares two identical copies.
+        </p>
+
+
+        <div class="detail-grid">
+
+            <div class="detail-row">
+
+                <span class="detail-label">
+                    Delivery Note
+                </span>
+
+                <span class="detail-value">
+                    {{ dispatch.dispatch_number }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span class="detail-label">
+                    Created
+                </span>
+
+                <span class="detail-value">
+                    {{ delivery_note.created_at|date:"d-M-Y H:i" }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span class="detail-label">
+                    Returned Receipt
+                </span>
+
+                <span class="detail-value">
+
+                    {% if delivery_note.receiver_name or delivery_note.receiver_id or delivery_note.receiver_phone or delivery_note.delivered_at %}
+
+                        Information recorded
+
+                    {% else %}
+
+                        Not yet recorded
+
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="button-row">
+
+            <a
+                href="{% url 'orders:delivery_note_detail' dispatch.id %}"
+                class="button button-secondary"
+            >
+                View Delivery Note
+            </a>
+
+
+            <a
+                href="{% url 'orders:delivery_note_edit' dispatch.id %}"
+                class="button button-secondary"
+            >
+                Record Returned Copy
+            </a>
+
+
+            <a
+                href="{% url 'orders:delivery_note_print' dispatch.id %}"
+                class="button button-primary"
+                target="_blank"
+            >
+                Print 2 Copies
+            </a>
+
+        </div>
+
+
+    {% else %}
+
+        <p>
+            This dispatch does not currently have a Delivery Note.
+            Create one only when proof of delivery is required.
+        </p>
+
+
+        <form
+            method="post"
+            action="{% url 'orders:delivery_note_create' dispatch.id %}"
+            class="inline-form"
+            data-prevent-double-submit
+        >
+
+            {% csrf_token %}
+
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                Create Delivery Note
+            </button>
+
+        </form>
+
+    {% endif %}
+
+</section>
+
+
+{% endblock %}

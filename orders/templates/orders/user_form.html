@@ -1,0 +1,210 @@
+{% extends "orders/base.html" %}
+
+
+{% block title %}
+{{ page_title }} | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            {{ page_title }}
+        </h1>
+
+        <p class="page-subtitle">
+
+            {% if editing %}
+                Update the user's account information.
+            {% else %}
+                Create a new OMS user account.
+            {% endif %}
+
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'orders:user_list' %}"
+        class="button button-secondary"
+    >
+        Back to Users
+    </a>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<form
+    method="post"
+    data-prevent-double-submit
+>
+
+    {% csrf_token %}
+
+
+    <section class="card">
+
+        <h2 class="card-title">
+            Account Information
+        </h2>
+
+
+        {% if form.non_field_errors %}
+
+            <div class="message message-error">
+                {{ form.non_field_errors }}
+            </div>
+
+        {% endif %}
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label for="{{ form.username.id_for_label }}">
+                    Username
+                </label>
+
+                {{ form.username }}
+
+                {{ form.username.errors }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.first_name.id_for_label }}">
+                    First Name
+                </label>
+
+                {{ form.first_name }}
+
+                {{ form.first_name.errors }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.last_name.id_for_label }}">
+                    Last Name
+                </label>
+
+                {{ form.last_name }}
+
+                {{ form.last_name.errors }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.email.id_for_label }}">
+                    Email
+                </label>
+
+                {{ form.email }}
+
+                {{ form.email.errors }}
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="{{ form.is_active.id_for_label }}">
+                    Active
+                </label>
+
+                {{ form.is_active }}
+
+                {{ form.is_active.errors }}
+
+                <span class="help-text">
+                    Inactive users cannot log in.
+                </span>
+
+            </div>
+
+
+            {% if not editing %}
+
+                <div class="form-group">
+
+                    <label for="{{ form.password1.id_for_label }}">
+                        Password
+                    </label>
+
+                    {{ form.password1 }}
+
+                    {{ form.password1.errors }}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.password2.id_for_label }}">
+                        Confirm Password
+                    </label>
+
+                    {{ form.password2 }}
+
+                    {{ form.password2.errors }}
+
+                </div>
+
+            {% endif %}
+
+
+        </div>
+
+    </section>
+
+
+
+    <section class="card">
+
+        <div class="button-row">
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+
+                {% if editing %}
+                    Save Changes
+                {% else %}
+                    Create User
+                {% endif %}
+
+            </button>
+
+
+            <a
+                href="{% url 'orders:user_list' %}"
+                class="button button-secondary"
+            >
+                Cancel
+            </a>
+
+        </div>
+
+    </section>
+
+</form>
+
+{% endblock %}

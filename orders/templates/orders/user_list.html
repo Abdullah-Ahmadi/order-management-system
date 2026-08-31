@@ -1,0 +1,398 @@
+{% extends "orders/base.html" %}
+{% load static %}
+
+
+{% block title %}
+Users | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            Users
+        </h1>
+
+        <p class="page-subtitle">
+            Manage accounts that can access the Order Management System.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'orders:user_create' %}"
+        class="button button-primary"
+    >
+        Add User
+    </a>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<section class="card">
+
+
+    <!-- =================================================
+         FILTERS
+    ================================================== -->
+
+    <form
+        method="get"
+        action="{% url 'orders:user_list' %}"
+        class="filter-bar"
+        id="user-filter-form"
+    >
+
+
+        <div class="filter-item-grow">
+
+            <label for="q">
+                Search
+            </label>
+
+            <input
+                type="search"
+                id="q"
+                name="q"
+                value="{{ search }}"
+                placeholder="Username, name, or email..."
+                autocomplete="off"
+            >
+
+            <span class="help-text">
+                Results update automatically as you type.
+            </span>
+
+        </div>
+
+
+        <div class="filter-item">
+
+            <label for="status">
+                Status
+            </label>
+
+            <select
+                id="status"
+                name="status"
+            >
+
+                <option value="">
+                    All Statuses
+                </option>
+
+                <option
+                    value="active"
+                    {% if selected_status == "active" %}
+                        selected
+                    {% endif %}
+                >
+                    Active
+                </option>
+
+                <option
+                    value="inactive"
+                    {% if selected_status == "inactive" %}
+                        selected
+                    {% endif %}
+                >
+                    Inactive
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                Filter
+            </button>
+
+        </div>
+
+
+        <div>
+
+            <button
+                type="button"
+                class="button button-secondary"
+                id="user-filter-clear"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    </form>
+
+
+    <div
+        id="user-filter-status"
+        class="help-text"
+        role="status"
+        aria-live="polite"
+    ></div>
+
+
+
+    <!-- =================================================
+         RESULTS
+    ================================================== -->
+
+    <div id="user-results">
+
+
+        {% if system_users %}
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Username
+                            </th>
+
+                            <th>
+                                Name
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Account Type
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for user_obj in system_users %}
+
+                            <tr>
+
+
+                                <td>
+
+                                    <strong>
+                                        {{ user_obj.username }}
+                                    </strong>
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if user_obj.get_full_name %}
+
+                                        {{ user_obj.get_full_name }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if user_obj.email %}
+
+                                        {{ user_obj.email }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if user_obj.is_superuser %}
+
+                                        Administrator
+
+                                    {% else %}
+
+                                        User
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        class="
+                                            status
+                                            {% if user_obj.is_active %}
+                                                status-active
+                                            {% else %}
+                                                status-inactive
+                                            {% endif %}
+                                        "
+                                    >
+
+                                        {% if user_obj.is_active %}
+                                            Active
+                                        {% else %}
+                                            Inactive
+                                        {% endif %}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="management-table-actions">
+
+
+                                        <a
+                                            href="{% url 'orders:user_edit' user_obj.id %}"
+                                            class="button button-secondary"
+                                        >
+                                            Edit
+                                        </a>
+
+
+                                        <a
+                                            href="{% url 'orders:user_reset_password' user_obj.id %}"
+                                            class="button button-secondary"
+                                        >
+                                            Password
+                                        </a>
+
+
+                                        {% if user_obj.id == user.id %}
+
+                                            <span class="help-text">
+                                                Current User
+                                            </span>
+
+                                        {% else %}
+
+                                            <form
+                                                method="post"
+                                                action="{% url 'orders:user_toggle_status' user_obj.id %}"
+                                                class="inline-form"
+                                            >
+
+                                                {% csrf_token %}
+
+
+                                                <button
+                                                    type="submit"
+                                                    class="
+                                                        button
+                                                        {% if user_obj.is_active %}
+                                                            button-danger
+                                                        {% else %}
+                                                            button-success
+                                                        {% endif %}
+                                                    "
+                                                    data-confirm="
+                                                        {% if user_obj.is_active %}
+                                                            Deactivate this user?
+                                                        {% else %}
+                                                            Activate this user?
+                                                        {% endif %}
+                                                    "
+                                                >
+
+                                                    {% if user_obj.is_active %}
+                                                        Deactivate
+                                                    {% else %}
+                                                        Activate
+                                                    {% endif %}
+
+                                                </button>
+
+                                            </form>
+
+                                        {% endif %}
+
+
+                                    </div>
+
+                                </td>
+
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <p>
+                    No users matched your search.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'orders/js/user_list.js' %}"
+    defer
+></script>
+
+{% endblock %}

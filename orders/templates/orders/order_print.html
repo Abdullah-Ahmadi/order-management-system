@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Order {{ order.serial_number }}
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000;
+            background: #fff;
+        }
+
+        .document {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .print-controls {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .print-button {
+            padding: 9px 16px;
+
+            border: 0;
+            border-radius: 4px;
+
+            background: #222;
+            color: #fff;
+
+            cursor: pointer;
+        }
+
+        .header {
+            margin-bottom: 20px;
+
+            text-align: center;
+        }
+
+        .company-name {
+            margin: 0;
+
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .document-title {
+            margin-top: 12px;
+
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .info-table,
+        .product-table,
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .info-table {
+            margin-bottom: 18px;
+        }
+
+        .info-table td {
+            padding: 7px 8px;
+
+            border: 1px solid #000;
+
+            font-size: 12px;
+        }
+
+        .info-label {
+            width: 18%;
+
+            font-weight: bold;
+            background: #f0f0f0;
+        }
+
+        .product-table th,
+        .product-table td {
+            padding: 7px;
+
+            border: 1px solid #000;
+
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .product-table th {
+            background: #eeeeee;
+        }
+
+        .product-name {
+            text-align: left !important;
+        }
+
+        .summary-wrapper {
+            display: flex;
+            justify-content: flex-end;
+
+            margin-top: 18px;
+        }
+
+        .summary-table {
+            width: 400px;
+        }
+
+        .summary-table td {
+            padding: 8px;
+
+            border: 1px solid #000;
+
+            font-size: 12px;
+        }
+
+        .summary-label {
+            font-weight: bold;
+            background: #eeeeee;
+        }
+
+        .print-time {
+            margin-top: 25px;
+
+            text-align: right;
+            font-size: 10px;
+        }
+
+        @page {
+            size: A4;
+            margin: 12mm;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+
+            .print-controls {
+                display: none;
+            }
+
+            .document {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<div class="document">
+
+
+    <!-- =================================================
+         PRINT BUTTON
+    ================================================== -->
+
+    <div class="print-controls">
+
+        <button
+            type="button"
+            class="print-button"
+            onclick="window.print()"
+        >
+            Print Order
+        </button>
+
+    </div>
+
+
+    <!-- =================================================
+         HEADER
+    ================================================== -->
+
+    <header class="header">
+
+        <h1 class="company-name">
+            Afghanistan Beverage Industries Ltd.
+        </h1>
+
+        <div class="document-title">
+            ORDER
+        </div>
+
+    </header>
+
+
+    <!-- =================================================
+         ORDER INFORMATION
+    ================================================== -->
+
+    <table class="info-table">
+
+        <tr>
+
+            <td class="info-label">
+                Date
+            </td>
+
+            <td>
+                {{ order.order_date|date:"d-M-Y" }}
+            </td>
+
+
+            <td class="info-label">
+                Serial Number
+            </td>
+
+            <td>
+                {{ order.serial_number }}
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="info-label">
+                Customer
+            </td>
+
+            <td colspan="3">
+                {{ order.distributor.full_name }}
+                ({{ order.distributor.customer_code }})
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="info-label">
+                Territory
+            </td>
+
+            <td>
+                {{ order.distributor.territory.name }}
+            </td>
+
+
+            <td class="info-label">
+                Customer Type
+            </td>
+
+            <td>
+                {{ order.distributor.get_customer_type_display }}
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="info-label">
+                Payment Status
+            </td>
+
+            <td>
+                {{ order.distributor.get_payment_status_display }}
+            </td>
+
+
+            <td class="info-label">
+                Status
+            </td>
+
+            <td>
+                {{ order.get_status_display }}
+            </td>
+
+        </tr>
+
+    </table>
+
+
+    <!-- =================================================
+         PRODUCTS
+    ================================================== -->
+
+    <table class="product-table">
+
+        <thead>
+
+            <tr>
+                <th>#</th>
+                <th>SKU</th>
+                <th>Product</th>
+                <th>Package</th>
+                <th>Size</th>
+                <th>Cases</th>
+                <th>Price / Case</th>
+                <th>Total</th>
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for item in order.items.all %}
+
+                <tr>
+
+                    <td>
+                        {{ forloop.counter }}
+                    </td>
+
+
+                    <td>
+                        {{ item.product.sku }}
+                    </td>
+
+
+                    <td class="product-name">
+                        {{ item.product.name }}
+                    </td>
+
+
+                    <td>
+                        {{ item.product.get_package_type_display }}
+                    </td>
+
+
+                    <td>
+                        {{ item.product.size }}
+                    </td>
+
+
+                    <td>
+                        {{ item.quantity }}
+                    </td>
+
+
+                    <td>
+                        AFN {{ item.unit_price|floatformat:2 }}
+                    </td>
+
+
+                    <td
+                        class="line-total"
+                        data-quantity="{{ item.quantity }}"
+                        data-price="{{ item.unit_price }}"
+                    >
+                        —
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td colspan="8">
+                        No products.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <!-- =================================================
+         SUMMARY
+    ================================================== -->
+
+    <div class="summary-wrapper">
+
+        <table class="summary-table">
+
+            <tr>
+
+                <td class="summary-label">
+                    Total Cases
+                </td>
+
+                <td>
+                    {{ order.total_cases }}
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td class="summary-label">
+                    Total Weight
+                </td>
+
+                <td>
+                    {{ order.total_weight_kg|floatformat:2 }}
+                    kg
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td class="summary-label">
+                    Invoice Value
+                </td>
+
+                <td>
+                    <strong>
+                        AFN {{ order.invoice_value|floatformat:2 }}
+                    </strong>
+                </td>
+
+            </tr>
+
+        </table>
+
+    </div>
+
+
+    <!-- =================================================
+         PRINT TIME
+    ================================================== -->
+
+    <div class="print-time">
+        Printed:
+        {% now "d-M-Y H:i" %}
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     CALCULATE LINE TOTALS
+===================================================== -->
+
+<script>
+
+    "use strict";
+
+    document.querySelectorAll(
+        ".line-total"
+    ).forEach(function (cell) {
+
+        const quantity =
+            Number(cell.dataset.quantity);
+
+        const price =
+            Number(cell.dataset.price);
+
+        const total =
+            quantity * price;
+
+        cell.textContent =
+            "AFN " +
+            total.toLocaleString(
+                "en-US",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            );
+
+    });
+
+</script>
+
+</body>
+</html>

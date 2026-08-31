@@ -1,0 +1,498 @@
+{% extends "orders/base.html" %}
+{% load static %}
+
+
+{% block title %}
+Dispatch Summary | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header no-print">
+
+    <div>
+
+        <h1 class="page-title">
+            Dispatch Summary
+        </h1>
+
+        <p class="page-subtitle">
+            Daily summary of dispatched products.
+        </p>
+
+    </div>
+
+
+    <div class="button-row">
+
+
+        <!-- PRINT -->
+
+        <button
+            type="button"
+            class="button button-secondary"
+            data-print
+        >
+            Print Summary
+        </button>
+
+
+        <!-- EXCEL -->
+
+        <a
+            href="{% url 'orders:dispatch_summary_excel' %}?date={{ selected_date|date:'Y-m-d' }}"
+            class="button button-secondary"
+        >
+            Export Excel
+        </a>
+
+
+        <!-- IMAGE -->
+
+        {% if rows %}
+
+            <button
+                type="button"
+                class="button button-primary"
+                id="dispatch-summary-image-button"
+            >
+                Download Image
+            </button>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<!-- =====================================================
+     DATE FILTER
+===================================================== -->
+
+<section class="card no-print">
+
+    <form
+        method="get"
+        class="filter-bar"
+    >
+
+        <div class="filter-item">
+
+            <label for="date">
+                Summary Date
+            </label>
+
+            <input
+                type="date"
+                id="date"
+                name="date"
+                value="{{ selected_date|date:'Y-m-d' }}"
+            >
+
+        </div>
+
+
+        <div>
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                View Summary
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+
+<!-- =====================================================
+     DISPATCH SUMMARY REPORT
+
+     This is also the source data used to create the PNG.
+===================================================== -->
+
+<section
+    class="card"
+    id="dispatch-summary-report"
+    data-summary-date="{{ selected_date|date:'d-M-y' }}"
+>
+
+
+    <!-- =================================================
+         REPORT HEADER
+    ================================================== -->
+
+    <div
+        style="
+            text-align: center;
+            margin-bottom: 20px;
+        "
+    >
+
+        <h2
+            style="
+                margin-bottom: 5px;
+            "
+        >
+            Afghanistan Beverage Industries Ltd.
+        </h2>
+
+
+        <h3
+            style="
+                margin: 0;
+            "
+        >
+            Daily Dispatch Summary
+        </h3>
+
+
+        <p>
+            {{ selected_date|date:"d-M-y" }}
+        </p>
+
+    </div>
+
+
+
+    <!-- =================================================
+         SUMMARY TABLE
+    ================================================== -->
+
+    {% if rows %}
+
+        <div class="table-container">
+
+            <table id="dispatch-summary-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            S.#
+                        </th>
+
+                        <th>
+                            Customer Name
+                        </th>
+
+                        <th>
+                            Territory
+                        </th>
+
+                        <th>
+                            Total Trucks
+                        </th>
+
+                        <th>
+                            Tonnage
+                        </th>
+
+                        <th>
+                            PET 1500
+                        </th>
+
+                        <th>
+                            Can 300
+                        </th>
+
+                        <th>
+                            Can 250
+                        </th>
+
+                        <th>
+                            Sting 250
+                        </th>
+
+                        <th>
+                            Sting 300
+                        </th>
+
+                        <th>
+                            Total Cases
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for row in rows %}
+
+                        <tr>
+
+
+                            <!-- SERIAL -->
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+
+                            <!-- CUSTOMER -->
+
+                            <td>
+                                {{ row.customer_name }}
+                                ({{ row.customer_code }})
+                            </td>
+
+
+                            <!-- TERRITORY -->
+
+                            <td>
+                                {{ row.territory }}
+                            </td>
+
+
+                            <!-- TRUCKS -->
+
+                            <td>
+                                {{ row.total_trucks }}
+                            </td>
+
+
+                            <!-- TONNAGE -->
+
+                            <td>
+                                {{ row.tonnage|floatformat:2 }}
+                            </td>
+
+
+                            <!-- PET -->
+
+                            <td>
+                                {{ row.pet_1500 }}
+                            </td>
+
+
+                            <!-- CAN 300 -->
+
+                            <td>
+                                {{ row.can_300 }}
+                            </td>
+
+
+                            <!-- CAN 250 -->
+
+                            <td>
+                                {{ row.can_250 }}
+                            </td>
+
+
+                            <!-- STING 250 -->
+
+                            <td>
+                                {{ row.sting_250 }}
+                            </td>
+
+
+                            <!-- STING 300 -->
+
+                            <td>
+                                {{ row.sting_300 }}
+                            </td>
+
+
+                            <!-- TOTAL CASES -->
+
+                            <td>
+
+                                <strong>
+                                    {{ row.total_cases }}
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+
+
+                    <!-- =================================
+                         TOTAL ROW
+                    ================================== -->
+
+                    <tr
+                        style="
+                            font-weight: bold;
+                        "
+                    >
+
+                        <td colspan="3">
+                            TOTAL
+                        </td>
+
+
+                        <td>
+                            {{ totals.total_trucks }}
+                        </td>
+
+
+                        <td>
+                            {{ totals.tonnage|floatformat:2 }}
+                        </td>
+
+
+                        <td>
+                            {{ totals.pet_1500 }}
+                        </td>
+
+
+                        <td>
+                            {{ totals.can_300 }}
+                        </td>
+
+
+                        <td>
+                            {{ totals.can_250 }}
+                        </td>
+
+
+                        <td>
+                            {{ totals.sting_250 }}
+                        </td>
+
+
+                        <td>
+                            {{ totals.sting_300 }}
+                        </td>
+
+
+                        <td>
+                            {{ totals.total_cases }}
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+
+        <!-- =================================================
+             SUMMARY VALUES
+
+             Useful on-screen, but the image and printed
+             report already include the TOTAL table row.
+        ================================================== -->
+
+        <div
+            class="summary-grid no-print"
+            style="
+                margin-top: 20px;
+            "
+        >
+
+
+            <!-- TRUCKS -->
+
+            <div class="summary-item">
+
+                <span class="summary-label">
+                    Total Trucks
+                </span>
+
+                <span class="summary-value">
+                    {{ totals.total_trucks }}
+                </span>
+
+            </div>
+
+
+            <!-- TONNAGE -->
+
+            <div class="summary-item">
+
+                <span class="summary-label">
+                    Total Tonnage
+                </span>
+
+                <span class="summary-value">
+                    {{ totals.tonnage|floatformat:2 }}
+                </span>
+
+            </div>
+
+
+            <!-- CASES -->
+
+            <div class="summary-item">
+
+                <span class="summary-label">
+                    Total Cases
+                </span>
+
+                <span class="summary-value">
+                    {{ totals.total_cases }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRINT INFORMATION
+        ================================================== -->
+
+        <div
+            class="print-only"
+            style="
+                margin-top: 30px;
+                text-align: right;
+                font-size: 12px;
+            "
+        >
+            Printed:
+            {% now "d-M-y H:i" %}
+        </div>
+
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <p>
+                No dispatches were recorded for
+                {{ selected_date|date:"d-M-y" }}.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'orders/js/dispatch_summary.js' %}"
+    defer
+></script>
+
+{% endblock %}

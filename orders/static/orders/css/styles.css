@@ -1,0 +1,1137 @@
+/* =========================================================
+   GENERAL
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #f4f6f8;
+    color: #222;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    padding: 16px 28px;
+
+    background: #1f2937;
+    color: white;
+}
+
+.header-brand a {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.brand-subtitle {
+    margin-top: 3px;
+
+    font-size: 0.85rem;
+    color: #cbd5e1;
+}
+
+.header-user {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logout-button {
+    padding: 7px 12px;
+
+    border: 0;
+    border-radius: 5px;
+
+    background: #dc2626;
+    color: white;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.main-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+
+    padding: 0 28px;
+
+    background: #ffffff;
+    border-bottom: 1px solid #d9dee5;
+}
+
+.nav-link {
+    display: block;
+
+    padding: 13px 15px;
+
+    font-size: 0.95rem;
+    color: #374151;
+}
+
+.nav-link:hover {
+    background: #eef2f7;
+    color: #111827;
+}
+
+
+/* =========================================================
+   NAVIGATION DROPDOWNS
+========================================================= */
+
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-summary {
+    list-style: none;
+
+    cursor: pointer;
+    user-select: none;
+}
+
+.nav-summary::-webkit-details-marker {
+    display: none;
+}
+
+.nav-caret {
+    margin-left: 5px;
+
+    font-size: 0.75rem;
+
+    transition: transform 0.15s ease;
+}
+
+.nav-dropdown[open] > .nav-summary {
+    background: #eef2f7;
+    color: #111827;
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 1px);
+    left: 0;
+    z-index: 100;
+
+    min-width: 230px;
+    padding: 7px;
+
+    background: white;
+
+    border: 1px solid #d9dee5;
+    border-radius: 0 0 7px 7px;
+
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+}
+
+.nav-dropdown-menu a {
+    display: block;
+
+    padding: 10px 11px;
+
+    border-radius: 5px;
+
+    color: #374151;
+    white-space: nowrap;
+}
+
+.nav-dropdown-menu a:hover {
+    background: #eef2f7;
+    color: #111827;
+}
+
+
+/* =========================================================
+   PAGE LAYOUT
+========================================================= */
+
+.page-container {
+    width: min(1200px, calc(100% - 32px));
+    margin: 28px auto;
+
+    /*
+     * Makes the main page area expand vertically on
+     * short pages so the footer stays at the bottom
+     * of the browser window.
+     */
+    flex: 1 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    margin-bottom: 20px;
+}
+
+.page-title {
+    margin: 0;
+
+    font-size: 1.7rem;
+    font-weight: 700;
+}
+
+.page-subtitle {
+    margin: 6px 0 0;
+
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.card {
+    margin-bottom: 22px;
+    padding: 22px;
+
+    background: white;
+
+    border: 1px solid #dde2e8;
+    border-radius: 8px;
+}
+
+.card-title {
+    margin-top: 0;
+    margin-bottom: 18px;
+
+    font-size: 1.15rem;
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(180px, 1fr)
+    );
+    gap: 16px;
+
+    margin-bottom: 24px;
+}
+
+.dashboard-card {
+    padding: 20px;
+
+    background: white;
+
+    border: 1px solid #dde2e8;
+    border-radius: 8px;
+}
+
+.dashboard-card-label {
+    margin-bottom: 7px;
+
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.dashboard-card-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   FORMS
+========================================================= */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        2,
+        minmax(0, 1fr)
+    );
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-group-full {
+    grid-column: 1 / -1;
+}
+
+label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+
+    padding: 9px 10px;
+
+    border: 1px solid #cfd5dd;
+    border-radius: 5px;
+
+    background: white;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid #93c5fd;
+    border-color: #2563eb;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.errorlist {
+    margin: 5px 0 0;
+    padding-left: 18px;
+
+    color: #b91c1c;
+    font-size: 0.85rem;
+}
+
+.help-text {
+    color: #6b7280;
+    font-size: 0.82rem;
+}
+
+
+/* =========================================================
+   CHECKBOX ROWS
+========================================================= */
+
+.form-check-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    min-height: 40px;
+}
+
+.form-check-row input[type="checkbox"] {
+    width: auto;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.button {
+    display: inline-block;
+
+    padding: 9px 14px;
+
+    border: 1px solid transparent;
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+}
+
+.button-primary {
+    background: #2563eb;
+    color: white;
+}
+
+.button-primary:hover {
+    background: #1d4ed8;
+}
+
+.button-secondary {
+    background: white;
+    color: #374151;
+
+    border-color: #cfd5dd;
+}
+
+.button-secondary:hover {
+    background: #f3f4f6;
+}
+
+.button-danger {
+    background: #dc2626;
+    color: white;
+}
+
+.button-success {
+    background: #16a34a;
+    color: white;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+
+/* =========================================================
+   TABLES
+========================================================= */
+
+.table-container {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background: white;
+}
+
+th,
+td {
+    padding: 10px 12px;
+
+    border: 1px solid #dde2e8;
+
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background: #f1f5f9;
+
+    font-size: 0.9rem;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+.table-actions {
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   ORDER / DISPATCH TABLE COLUMNS
+========================================================= */
+
+.dispatch-number-column {
+    min-width: 125px;
+
+    white-space: nowrap;
+}
+
+.order-date-column {
+    min-width: 105px;
+
+    white-space: nowrap;
+}
+
+.order-weight-column {
+    min-width: 75px;
+
+    white-space: nowrap;
+}
+
+.order-invoice-column {
+    min-width: 140px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+.filter-item {
+    min-width: 160px;
+}
+
+.filter-item-grow {
+    flex: 1;
+
+    min-width: 220px;
+}
+
+
+/* =========================================================
+   DETAIL PAGES
+========================================================= */
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        2,
+        minmax(0, 1fr)
+    );
+    gap: 14px 24px;
+}
+
+.detail-row {
+    display: flex;
+    gap: 10px;
+}
+
+.detail-label {
+    min-width: 140px;
+
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.detail-value {
+    flex: 1;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+    display: inline-block;
+
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.status-draft {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.status-confirmed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-inactive {
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+.messages-container {
+    width: min(1200px, calc(100% - 32px));
+    margin: 20px auto 0;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 11px 14px;
+
+    border: 1px solid #cfd5dd;
+    border-radius: 5px;
+
+    background: white;
+}
+
+.message-success {
+    background: #ecfdf5;
+
+    border-color: #86efac;
+
+    color: #166534;
+}
+
+.message-error {
+    background: #fef2f2;
+
+    border-color: #fca5a5;
+
+    color: #991b1b;
+}
+
+.message-warning {
+    background: #fffbeb;
+
+    border-color: #fde68a;
+
+    color: #92400e;
+}
+
+.message-info {
+    background: #eff6ff;
+
+    border-color: #93c5fd;
+
+    color: #1e40af;
+}
+
+
+/* =========================================================
+   EMPTY STATES
+========================================================= */
+
+.empty-state {
+    padding: 30px;
+
+    text-align: center;
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   SUMMARY VALUES
+========================================================= */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(180px, 1fr)
+    );
+    gap: 15px;
+}
+
+.summary-item {
+    padding: 14px;
+
+    border: 1px solid #dde2e8;
+    border-radius: 6px;
+
+    background: #f8fafc;
+}
+
+.summary-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #6b7280;
+    font-size: 0.82rem;
+}
+
+.summary-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   MANAGEMENT
+========================================================= */
+
+.management-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(220px, 1fr)
+    );
+    gap: 16px;
+}
+
+.management-card {
+    display: block;
+
+    padding: 20px;
+
+    background: white;
+
+    border: 1px solid #dde2e8;
+    border-radius: 8px;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.management-card:hover {
+    transform: translateY(-1px);
+
+    box-shadow: 0 5px 14px rgba(15, 23, 42, 0.08);
+}
+
+.management-card-title {
+    margin: 0 0 7px;
+
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.management-card-meta {
+    margin: 0;
+
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.inline-form {
+    display: inline-block;
+
+    margin: 0;
+}
+
+.management-table-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.management-table-actions .inline-form {
+    display: inline-flex;
+}
+
+
+/* =========================================================
+   HELP
+========================================================= */
+
+.help-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.help-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.help-step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+    color: white;
+
+    font-weight: 700;
+}
+
+.help-step h3 {
+    margin: 3px 0 6px;
+
+    font-size: 1rem;
+}
+
+.help-step p {
+    margin: 0;
+
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+.help-topic {
+    border-top: 1px solid #dde2e8;
+}
+
+.help-topic:last-child {
+    border-bottom: 1px solid #dde2e8;
+}
+
+.help-topic summary {
+    padding: 15px 4px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+    color: #374151;
+}
+
+.help-topic summary:hover {
+    color: #111827;
+}
+
+.help-topic-content {
+    padding: 0 4px 15px 4px;
+
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+.help-topic-content p {
+    margin: 0 0 10px;
+}
+
+.help-topic-content p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.main-footer {
+    /*
+     * Because body is a vertical flex container,
+     * auto margin pushes the footer to the bottom
+     * whenever the page content is short.
+     */
+    margin-top: auto;
+    padding: 20px;
+
+    flex-shrink: 0;
+
+    text-align: center;
+    color: #6b7280;
+
+    font-size: 0.85rem;
+}
+
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+.print-only {
+    display: none;
+}
+
+@media print {
+
+    /*
+     * The screen layout uses flex to keep the footer
+     * at the bottom. Printing does not need that layout.
+     */
+    body {
+        min-height: auto;
+
+        display: block;
+
+        background: white;
+    }
+
+    .main-header,
+    .main-nav,
+    .main-footer,
+    .messages-container,
+    .no-print {
+        display: none !important;
+    }
+
+    .page-container {
+        width: 100%;
+        margin: 0;
+
+        flex: none;
+    }
+
+    .card {
+        padding: 0;
+
+        border: 0;
+    }
+
+    .print-only {
+        display: block;
+    }
+
+    table {
+        page-break-inside: avoid;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    /* =====================================================
+       HEADER
+    ====================================================== */
+
+    .main-header {
+        align-items: flex-start;
+        flex-direction: column;
+
+        padding: 14px 18px;
+    }
+
+    .header-user {
+        width: 100%;
+
+        justify-content: space-between;
+    }
+
+
+    /* =====================================================
+       MOBILE NAVIGATION
+    ====================================================== */
+
+    /*
+     * Desktop:
+     * Operations and Management remain normal horizontal
+     * dropdowns and app.js opens them on hover.
+     *
+     * Mobile:
+     * Navigation becomes vertical and <details> opens
+     * naturally when the user taps it.
+     */
+
+    .main-nav {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: stretch;
+
+        gap: 0;
+
+        padding: 6px 10px;
+    }
+
+
+    /*
+     * Dashboard, Operations, Management and Help should
+     * each occupy the full available width.
+     */
+
+    .main-nav > .nav-link,
+    .main-nav > .nav-dropdown {
+        width: 100%;
+    }
+
+    .main-nav > .nav-link {
+        padding: 11px 12px;
+    }
+
+
+    /*
+     * Make the Operations and Management summaries
+     * comfortable to tap.
+     */
+
+    .nav-summary {
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+
+        width: 100%;
+
+        padding: 11px 12px;
+    }
+
+    .nav-caret {
+        margin-left: auto;
+        padding-left: 8px;
+    }
+
+
+    /*
+     * The desktop menu is absolutely positioned.
+     *
+     * On mobile it must return to the normal page flow.
+     * Otherwise a fixed/absolute menu can appear outside
+     * the phone viewport.
+     */
+
+    .nav-dropdown-menu {
+        position: static;
+
+        top: auto;
+        right: auto;
+        bottom: auto;
+        left: auto;
+
+        z-index: auto;
+
+        width: 100%;
+        min-width: 0;
+
+        margin: 0 0 5px;
+        padding: 4px 8px 8px 18px;
+
+        border: 0;
+        border-radius: 0;
+
+        background: #f8fafc;
+
+        box-shadow: none;
+    }
+
+
+    /*
+     * Touch-friendly submenu links.
+     */
+
+    .nav-dropdown-menu a {
+        display: block;
+
+        width: 100%;
+
+        padding: 10px 12px;
+
+        border-radius: 5px;
+
+        white-space: normal;
+    }
+
+    .nav-dropdown-menu a + a {
+        margin-top: 2px;
+    }
+
+
+    /*
+     * Highlight the currently opened mobile section.
+     */
+
+    .nav-dropdown[open] > .nav-summary {
+        background: #eef2f7;
+        color: #111827;
+
+        font-weight: 600;
+    }
+
+
+    /*
+     * Point the caret upward when the section is open.
+     */
+
+    .nav-dropdown[open] > .nav-summary .nav-caret {
+        transform: rotate(180deg);
+    }
+
+
+    /* =====================================================
+       PAGE
+    ====================================================== */
+
+    .page-container {
+        width: min(100% - 20px, 1200px);
+
+        margin-top: 18px;
+    }
+
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    /* =====================================================
+       FORMS / DETAILS
+    ====================================================== */
+
+    .form-grid,
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-row {
+        flex-direction: column;
+
+        gap: 3px;
+    }
+
+    .detail-label {
+        min-width: auto;
+    }
+
+
+    /* =====================================================
+       FILTERS
+    ====================================================== */
+
+    .filter-bar {
+        align-items: stretch;
+    }
+
+    .filter-item,
+    .filter-item-grow {
+        width: 100%;
+        min-width: 0;
+    }
+
+
+    /* =====================================================
+       CARDS
+    ====================================================== */
+
+    .card {
+        padding: 15px;
+    }
+
+}

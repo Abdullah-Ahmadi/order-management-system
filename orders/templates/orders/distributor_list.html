@@ -1,0 +1,453 @@
+{% extends "orders/base.html" %}
+{% load static %}
+
+
+{% block title %}
+Customers / Distributors | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            Customers / Distributors
+        </h1>
+
+        <p class="page-subtitle">
+            Manage customers, territories, payment terms, and customer status.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'orders:distributor_create' %}"
+        class="button button-primary"
+    >
+        Add Customer
+    </a>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<section class="card">
+
+
+    <!-- =================================================
+         FILTERS
+    ================================================== -->
+
+    <form
+        method="get"
+        action="{% url 'orders:distributor_list' %}"
+        class="filter-bar"
+        id="customer-filter-form"
+    >
+
+
+        <!-- SEARCH -->
+
+        <div class="filter-item-grow">
+
+            <label for="q">
+                Search
+            </label>
+
+            <input
+                type="search"
+                id="q"
+                name="q"
+                value="{{ search }}"
+                placeholder="Customer ID, name, or territory..."
+                autocomplete="off"
+            >
+
+
+        </div>
+
+
+        <!-- CUSTOMER TYPE -->
+
+        <div class="filter-item">
+
+            <label for="customer_type">
+                Customer Type
+            </label>
+
+            <select
+                id="customer_type"
+                name="customer_type"
+            >
+
+                <option value="">
+                    All Types
+                </option>
+
+                {% for value, label in customer_type_choices %}
+
+                    <option
+                        value="{{ value }}"
+                        {% if selected_customer_type == value %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ label }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <!-- PAYMENT -->
+
+        <div class="filter-item">
+
+            <label for="payment_status">
+                Payment
+            </label>
+
+            <select
+                id="payment_status"
+                name="payment_status"
+            >
+
+                <option value="">
+                    All Payment Types
+                </option>
+
+                {% for value, label in payment_type_choices %}
+
+                    <option
+                        value="{{ value }}"
+                        {% if selected_payment_status == value %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ label }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="filter-item">
+
+            <label for="status">
+                Status
+            </label>
+
+            <select
+                id="status"
+                name="status"
+            >
+
+                <option value="">
+                    All Statuses
+                </option>
+
+                <option
+                    value="active"
+                    {% if selected_status == "active" %}
+                        selected
+                    {% endif %}
+                >
+                    Active
+                </option>
+
+                <option
+                    value="inactive"
+                    {% if selected_status == "inactive" %}
+                        selected
+                    {% endif %}
+                >
+                    Inactive
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- FILTER -->
+
+        <div>
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                Filter
+            </button>
+
+        </div>
+
+
+        <!-- CLEAR -->
+
+        <div>
+
+            <button
+                type="button"
+                class="button button-secondary"
+                id="customer-filter-clear"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    </form>
+
+
+
+    <!-- =================================================
+         LIVE SEARCH STATUS
+    ================================================== -->
+
+    <div
+        id="customer-filter-status"
+        class="help-text"
+        role="status"
+        aria-live="polite"
+    ></div>
+
+
+
+    <!-- =================================================
+         RESULTS
+    ================================================== -->
+
+    <div id="customer-results">
+
+        {% if distributors %}
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Customer ID
+                            </th>
+
+                            <th>
+                                Customer Name
+                            </th>
+
+                            <th>
+                                Territory
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Payment
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for distributor in distributors %}
+
+                            <tr>
+
+
+                                <!-- CUSTOMER ID -->
+
+                                <td>
+
+                                    <strong>
+                                        {{ distributor.customer_code }}
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- CUSTOMER NAME -->
+
+                                <td>
+                                    {{ distributor.full_name }}
+                                </td>
+
+
+                                <!-- TERRITORY -->
+
+                                <td>
+                                    {{ distributor.territory.name }}
+                                </td>
+
+
+                                <!-- CUSTOMER TYPE -->
+
+                                <td>
+                                    {{ distributor.get_customer_type_display }}
+                                </td>
+
+
+                                <!-- PAYMENT -->
+
+                                <td>
+                                    {{ distributor.get_payment_status_display }}
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    <span
+                                        class="
+                                            status
+                                            {% if distributor.is_active %}
+                                                status-active
+                                            {% else %}
+                                                status-inactive
+                                            {% endif %}
+                                        "
+                                    >
+
+                                        {% if distributor.is_active %}
+                                            Active
+                                        {% else %}
+                                            Inactive
+                                        {% endif %}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+
+                                <td>
+
+                                    <div class="management-table-actions">
+
+
+                                        <!-- EDIT -->
+
+                                        <a
+                                            href="{% url 'orders:distributor_edit' distributor.id %}"
+                                            class="button button-secondary"
+                                        >
+                                            Edit
+                                        </a>
+
+
+                                        <!-- ACTIVATE / DEACTIVATE -->
+
+                                        <form
+                                            method="post"
+                                            action="{% url 'orders:distributor_toggle_status' distributor.id %}"
+                                            class="inline-form"
+                                        >
+
+                                            {% csrf_token %}
+
+
+                                            <button
+                                                type="submit"
+                                                class="
+                                                    button
+                                                    {% if distributor.is_active %}
+                                                        button-danger
+                                                    {% else %}
+                                                        button-success
+                                                    {% endif %}
+                                                "
+                                                data-confirm="
+                                                    {% if distributor.is_active %}
+                                                        Deactivate this customer?
+                                                    {% else %}
+                                                        Activate this customer?
+                                                    {% endif %}
+                                                "
+                                            >
+
+                                                {% if distributor.is_active %}
+                                                    Deactivate
+                                                {% else %}
+                                                    Activate
+                                                {% endif %}
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <p>
+                    No customers matched your search.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'orders/js/distributor_list.js' %}"
+    defer
+></script>
+
+{% endblock %}

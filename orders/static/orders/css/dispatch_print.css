@@ -1,0 +1,657 @@
+/* =========================================================
+   ABI FINISH GOODS LOAD DISPATCH
+   ONE A4 SHEET / FOUR COPIES
+========================================================= */
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: #000;
+
+    background: #e5e7eb;
+}
+
+
+
+/* =========================================================
+   PRINT CONTROLS
+========================================================= */
+
+.print-controls {
+    width: 202mm;
+
+    margin:
+        18px auto
+        12px;
+
+    text-align: right;
+}
+
+
+.print-button {
+    padding:
+        9px
+        17px;
+
+    border: 0;
+    border-radius: 5px;
+
+    background: #1f2937;
+    color: #fff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.print-button:hover {
+    background: #111827;
+}
+
+
+
+/* =========================================================
+   A4 SHEET
+========================================================= */
+
+.dispatch-sheet {
+    width: 210mm;
+    height: 297mm;
+
+    margin:
+        0 auto
+        25px;
+
+    padding:
+        4mm
+        5mm;
+
+    background: #fff;
+
+    box-shadow:
+        0 3px 14px
+        rgba(0, 0, 0, 0.15);
+
+    overflow: hidden;
+}
+
+
+
+/* =========================================================
+   INDIVIDUAL DISPATCH COPY
+
+   Four copies share the available printable height.
+========================================================= */
+
+.dispatch-copy {
+    position: relative;
+
+    width: 100%;
+    height: 25%;
+
+    padding:
+        2mm
+        9mm
+        1.5mm
+        1mm;
+
+    overflow: hidden;
+}
+
+
+
+/*
+ * These become the ruler/cutting guides.
+ *
+ * They intentionally separate the four physical slips
+ * on the same sheet.
+ */
+
+.dispatch-copy + .dispatch-copy {
+    border-top:
+        1px dashed
+        #8b8b8b;
+}
+
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.dispatch-content {
+    width: 100%;
+    height: 100%;
+}
+
+
+
+/* =========================================================
+   VERTICAL COPY NAME
+========================================================= */
+
+.vertical-copy-label {
+    position: absolute;
+
+    top: 6mm;
+    right: 0;
+    bottom: 6mm;
+
+    width: 7mm;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-left:
+        1px solid
+        #777;
+
+    border-top:
+        1px solid
+        #aaa;
+
+    border-right:
+        2px solid
+        #aaa;
+
+    border-bottom:
+        1px solid
+        #aaa;
+
+    writing-mode:
+        vertical-rl;
+
+    transform:
+        rotate(180deg);
+
+    white-space: nowrap;
+
+    font-family:
+        "Arial Narrow",
+        Arial,
+        sans-serif;
+
+    font-size: 10pt;
+    font-weight: 700;
+
+    letter-spacing:
+        0.2px;
+}
+
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.dispatch-header {
+    display: grid;
+
+    grid-template-columns:
+        28mm
+        1fr
+        36mm;
+
+    align-items: start;
+
+    min-height: 15mm;
+}
+
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.dispatch-logo {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: center;
+    
+    /* border: solid 1px black; */
+
+    padding-top: 0.5mm;
+}
+
+
+.dispatch-logo img {
+    display: block;
+
+    width: 12mm;
+    height: 12mm;
+
+    object-fit: contain;
+}
+
+
+
+/* =========================================================
+   COMPANY TITLE
+========================================================= */
+
+.dispatch-heading {
+    padding-top: 1mm;
+
+    text-align: center;
+}
+
+
+.company-name {
+    font-family:
+        "Monotype Corsiva",
+        "Segoe Script",
+        cursive;
+
+    font-size: 14pt;
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+
+.document-title {
+    margin-top: 1.5mm;
+
+    font-size: 7.5pt;
+    font-style: italic;
+
+    line-height: 1;
+}
+
+
+
+/* =========================================================
+   DISPATCH META
+========================================================= */
+
+.dispatch-meta {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 6.4pt;
+
+    line-height: 1.15;
+}
+
+
+.dispatch-meta td {
+    padding:
+        0.45mm
+        0;
+}
+
+
+.meta-label {
+    width: 16mm;
+
+    padding-right:
+        2mm !important;
+
+    text-align: right;
+
+    font-weight: 500;
+
+    white-space: nowrap;
+}
+
+
+.meta-value {
+    text-align: left;
+
+    font-weight: 500;
+
+    white-space: nowrap;
+}
+
+
+
+/* =========================================================
+   CUSTOMER
+========================================================= */
+
+.customer-row {
+    display: flex;
+
+    align-items: baseline;
+
+    min-height: 5mm;
+
+    margin-top: -1mm;
+
+    padding-left: 5.5mm;
+
+    font-size: 7pt;
+}
+
+
+.customer-label {
+    margin-right: 2mm;
+
+    white-space: nowrap;
+}
+
+
+.customer-name {
+    font-size: 8.5pt;
+    font-weight: 700;
+
+    text-decoration: underline;
+
+    white-space: nowrap;
+}
+
+
+
+/* =========================================================
+   PRINT TIME
+========================================================= */
+
+.print-time {
+    height: 3mm;
+
+    padding-left: 14mm;
+
+    font-size: 4.5pt;
+    font-style: italic;
+
+    color: #666;
+}
+
+
+
+/* =========================================================
+   PRODUCT MATRIX
+========================================================= */
+
+.product-matrix {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    table-layout: fixed;
+}
+
+
+.product-matrix th,
+.product-matrix td {
+    height: 4.2mm;
+
+    padding:
+        0.3mm
+        0.5mm;
+
+    border:
+        0.35mm solid
+        #000;
+
+    text-align: center;
+    vertical-align: middle;
+
+    font-size: 5.5pt;
+
+    line-height: 1;
+}
+
+
+.product-matrix th {
+    height: 5.2mm;
+
+    font-size: 6.2pt;
+    font-weight: 700;
+}
+
+
+.packing-heading,
+.packing-name {
+    width: 26mm;
+
+    text-align: center;
+}
+
+
+.packing-name {
+    font-size: 5pt !important;
+
+    white-space: nowrap;
+}
+
+
+.total-heading,
+.row-total {
+    width: 21mm;
+}
+
+
+.row-total {
+    text-align: right !important;
+
+    padding-right:
+        2mm !important;
+}
+
+
+
+/* =========================================================
+   GRAND TOTAL
+========================================================= */
+
+.grand-total-row {
+    height: 3.5mm;
+
+    padding-right:
+        2mm;
+
+    text-align: right;
+
+    font-size: 5.7pt;
+}
+
+
+
+/* =========================================================
+   SIGNATURES
+========================================================= */
+
+.signature-row {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    column-gap: 7mm;
+
+    align-items: end;
+
+    height: 6mm;
+
+    padding:
+        1mm
+        1.5mm
+        0;
+
+    font-size: 5.2pt;
+}
+
+
+.signature-item {
+    display: flex;
+
+    align-items: flex-end;
+
+    white-space: nowrap;
+}
+
+
+.signature-item > span:first-child {
+    margin-right:
+        1mm;
+}
+
+
+.signature-line {
+    display: block;
+
+    flex: 1;
+
+    min-width: 10mm;
+
+    border-bottom:
+        0.25mm solid
+        #555;
+}
+
+
+
+/* =========================================================
+   TRANSPORT
+========================================================= */
+
+.transport-row {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    align-items: center;
+
+    column-gap: 20mm;
+
+    width: 60%;
+
+    height: 5mm;
+
+    margin: 0 auto;
+
+    font-size: 5.2pt;
+}
+
+
+.transport-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 2mm;
+
+    white-space: nowrap;
+}
+
+
+.transport-label {
+    font-weight: 500;
+}
+
+
+.transport-value {
+    min-width: 10mm;
+
+    text-align: center;
+}
+
+
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@page {
+    size: A4 portrait;
+    margin: 0;
+}
+
+
+@media print {
+
+    html,
+    body {
+        width: 210mm;
+        height: 297mm;
+
+        margin: 0;
+        padding: 0;
+
+        background: #fff;
+    }
+
+
+    body {
+        overflow: hidden;
+    }
+
+
+    .print-controls {
+        display: none !important;
+    }
+
+
+    .dispatch-sheet {
+        width: 210mm;
+        height: 297mm;
+
+        margin: 0;
+
+        padding:
+            4mm
+            5mm;
+
+        box-shadow: none;
+
+        overflow: hidden;
+    }
+
+
+    .dispatch-copy {
+        height: 25%;
+
+        break-inside: avoid;
+        page-break-inside: avoid;
+
+        /*
+         * Deliberately DO NOT add:
+         *
+         * page-break-after: always;
+         *
+         * All four copies belong to the same page.
+         */
+    }
+
+
+    .dispatch-copy + .dispatch-copy {
+        border-top:
+            1px dashed
+            #777;
+    }
+
+
+    img {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+}

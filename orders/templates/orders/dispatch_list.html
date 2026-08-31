@@ -1,0 +1,317 @@
+{% extends "orders/base.html" %}
+
+
+{% block title %}
+Dispatches | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+<div class="page-header">
+
+    <div>
+        <h1 class="page-title">
+            Dispatches
+        </h1>
+
+        <p class="page-subtitle">
+            Search and review loading dispatches.
+        </p>
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+<section class="card">
+
+    <!-- =============================================
+         FILTERS
+    ============================================== -->
+
+    <form method="get" class="filter-bar">
+
+        <div class="filter-item-grow">
+
+            <label for="q">
+                Search
+            </label>
+
+            <input
+                type="text"
+                id="q"
+                name="q"
+                value="{{ search }}"
+                placeholder="Dispatch, order, distributor, driver, truck..."
+            >
+
+        </div>
+
+
+        <div class="filter-item">
+
+            <label for="date">
+                Order Date
+            </label>
+
+            <input
+                type="date"
+                id="date"
+                name="date"
+                {% if selected_date %}
+                    value="{{ selected_date|date:'Y-m-d' }}"
+                {% endif %}
+            >
+
+        </div>
+
+
+        <div>
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                Filter
+            </button>
+
+        </div>
+
+
+        <div>
+
+            <a
+                href="{% url 'orders:dispatch_list' %}"
+                class="button button-secondary"
+            >
+                Clear
+            </a>
+
+        </div>
+
+    </form>
+
+
+    <!-- =============================================
+         DISPATCH TABLE
+    ============================================== -->
+
+    {% if dispatches %}
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th class="dispatch-number-column">
+                            Dispatch
+                        </th>
+
+                        <th>
+                            Order
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Distributor
+                        </th>
+
+                        <th>
+                            Territory
+                        </th>
+
+                        <th>
+                            Driver
+                        </th>
+
+                        <th>
+                            Truck
+                        </th>
+
+                        <th>
+                            Weight
+                        </th>
+
+                        <th>
+                            Freight
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for dispatch in dispatches %}
+
+                        <tr>
+
+
+                            <!-- DISPATCH SERIAL -->
+
+                            <td class="dispatch-number-column">
+
+                                <strong>
+                                    {{ dispatch.dispatch_number }}
+                                </strong>
+
+                            </td>
+
+
+                            <!-- ORDER SERIAL -->
+
+                            <td>
+                                {{ dispatch.order.serial_number }}
+                            </td>
+
+
+                            <!-- DATE -->
+
+                            <td>
+                                {{ dispatch.order.order_date|date:"d-M-Y" }}
+                            </td>
+
+
+                            <!-- DISTRIBUTOR -->
+
+                            <td>
+                                {{ dispatch.order.distributor.full_name }}
+                            </td>
+
+
+                            <!-- TERRITORY -->
+
+                            <td>
+                                {{ dispatch.order.distributor.territory.name }}
+                            </td>
+
+
+                            <!-- DRIVER -->
+
+                            <td>
+
+                                {% if dispatch.driver %}
+
+                                    {{ dispatch.driver.full_name }}
+
+                                {% elif dispatch.external_driver_name %}
+
+                                    {{ dispatch.external_driver_name }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- TRUCK -->
+
+                            <td>
+
+                                {% if dispatch.truck %}
+
+                                    {{ dispatch.truck.plate_number }}
+
+                                {% elif dispatch.external_truck_plate %}
+
+                                    {{ dispatch.external_truck_plate }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- WEIGHT -->
+
+                            <td>
+
+                                {{ dispatch.total_weight_tons|floatformat:2 }}
+                                t
+
+                            </td>
+
+
+                            <!-- FREIGHT -->
+
+                            <td>
+
+                                AFN {{ dispatch.total_freight|floatformat:2 }}
+
+                            </td>
+
+
+                            <!-- ACTIONS -->
+
+                            <td class="table-actions">
+
+                                <a
+                                    href="{% url 'orders:dispatch_detail' dispatch.id %}"
+                                    class="button button-secondary"
+                                >
+                                    View
+                                </a>
+
+
+                                <a
+                                    href="{% url 'orders:dispatch_edit' dispatch.id %}"
+                                    class="button button-secondary"
+                                >
+                                    Edit
+                                </a>
+
+
+                                <a
+                                    href="{% url 'orders:dispatch_print' dispatch.id %}"
+                                    class="button button-secondary"
+                                    target="_blank"
+                                >
+                                    Print
+                                </a>
+
+                            </td>
+
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    {% else %}
+
+        <div class="empty-state">
+
+            No dispatches matched your search.
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

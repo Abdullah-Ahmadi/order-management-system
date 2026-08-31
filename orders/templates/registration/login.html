@@ -1,0 +1,127 @@
+{% extends "orders/base.html" %}
+
+
+{% block title %}
+Login | Order Management System
+{% endblock %}
+
+
+{% block content %}
+
+<div
+    style="
+        max-width: 420px;
+        margin: 60px auto;
+    "
+>
+
+    <section class="card">
+
+        <div style="text-align: center; margin-bottom: 25px;">
+
+            <h1 class="page-title">
+                Order Management System
+            </h1>
+
+            <p class="page-subtitle">
+                Sign in to continue
+            </p>
+
+        </div>
+
+
+        {% if form.errors %}
+
+            <div class="message message-error">
+                Invalid username or password.
+                Please try again.
+            </div>
+
+        {% endif %}
+
+
+        {% if next and user.is_authenticated %}
+
+            <div class="message message-warning">
+                Your account does not have permission
+                to access this page.
+            </div>
+
+        {% endif %}
+
+
+        <form
+            method="post"
+            action="{% url 'login' %}"
+            data-prevent-double-submit
+        >
+
+            {% csrf_token %}
+
+
+            <!-- USERNAME -->
+
+            <div
+                class="form-group"
+                style="margin-bottom: 18px;"
+            >
+
+                <label for="{{ form.username.id_for_label }}">
+                    Username
+                </label>
+
+                {{ form.username }}
+
+                {% if form.username.errors %}
+                    {{ form.username.errors }}
+                {% endif %}
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div
+                class="form-group"
+                style="margin-bottom: 22px;"
+            >
+
+                <label for="{{ form.password.id_for_label }}">
+                    Password
+                </label>
+
+                {{ form.password }}
+
+                {% if form.password.errors %}
+                    {{ form.password.errors }}
+                {% endif %}
+
+            </div>
+
+
+            <!-- Preserve requested destination -->
+
+            {% if next %}
+                <input
+                    type="hidden"
+                    name="next"
+                    value="{{ next }}"
+                >
+            {% endif %}
+
+
+            <button
+                type="submit"
+                class="button button-primary"
+                style="width: 100%;"
+            >
+                Login
+            </button>
+
+        </form>
+
+    </section>
+
+</div>
+
+{% endblock %}

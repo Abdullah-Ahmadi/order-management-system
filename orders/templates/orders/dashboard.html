@@ -1,0 +1,486 @@
+{% extends "orders/base.html" %}
+{% load static %}
+
+
+{% block title %}
+Dashboard | Order Management System
+{% endblock %}
+
+
+{% block extra_css %}
+
+<!-- Bootstrap Icons -->
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+>
+
+<!-- Dashboard-specific styles -->
+<link
+    rel="stylesheet"
+    href="{% static 'orders/css/dashboard.css' %}"
+>
+
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="dashboard-header">
+
+    <div>
+
+        <h1 class="page-title">
+            Dashboard
+        </h1>
+
+    </div>
+
+
+    <!--
+        One primary action is intentionally kept here.
+
+        We are NOT repeating Orders, Dispatches,
+        Dispatch Summary, Management, etc.
+    -->
+
+    <a
+        href="{% url 'orders:order_create' %}"
+        class="button button-primary dashboard-primary-action"
+    >
+        <i class="bi bi-plus-lg"></i>
+        New Order
+    </a>
+
+</div>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =====================================================
+     PRIMARY DASHBOARD METRICS
+===================================================== -->
+
+<section class="dashboard-metrics">
+
+
+    <!-- TODAY'S ORDERS -->
+
+    <article class="metric-card">
+
+        <div class="metric-icon metric-icon-primary">
+            <i class="bi bi-calendar-check"></i>
+        </div>
+
+        <div class="metric-content">
+
+            <span class="metric-label">
+                Today's Orders
+            </span>
+
+            <strong class="metric-value">
+                {{ today_orders }}
+            </strong>
+
+            <span class="metric-note">
+                Orders entered for today
+            </span>
+
+        </div>
+
+    </article>
+
+
+    <!-- TOTAL ORDERS -->
+
+    <article class="metric-card">
+
+        <div class="metric-icon">
+            <i class="bi bi-receipt"></i>
+        </div>
+
+        <div class="metric-content">
+
+            <span class="metric-label">
+                Total Orders
+            </span>
+
+            <strong class="metric-value">
+                {{ total_orders }}
+            </strong>
+
+            <span class="metric-note">
+                All orders in the system
+            </span>
+
+        </div>
+
+    </article>
+
+
+    <!-- ACTIVE CUSTOMERS -->
+
+    <article class="metric-card">
+
+        <div class="metric-icon">
+            <i class="bi bi-people"></i>
+        </div>
+
+        <div class="metric-content">
+
+            <span class="metric-label">
+                Active Customers
+            </span>
+
+            <strong class="metric-value">
+                {{ active_distributors }}
+            </strong>
+
+            <span class="metric-note">
+                Currently active distributors
+            </span>
+
+        </div>
+
+    </article>
+
+
+    <!-- ACTIVE PRODUCTS -->
+
+    <article class="metric-card">
+
+        <div class="metric-icon">
+            <i class="bi bi-box-seam"></i>
+        </div>
+
+        <div class="metric-content">
+
+            <span class="metric-label">
+                Active Products
+            </span>
+
+            <strong class="metric-value">
+                {{ active_products }}
+            </strong>
+
+            <span class="metric-note">
+                Available product records
+            </span>
+
+        </div>
+
+    </article>
+
+</section>
+
+
+
+<!-- =====================================================
+     OPERATIONAL RESOURCES
+===================================================== -->
+
+<section class="dashboard-resources">
+
+    <div class="resource-heading">
+
+        <div class="resource-heading-icon">
+            <i class="bi bi-building-gear"></i>
+        </div>
+
+        <div>
+            <h2>
+                Operational Resources
+            </h2>
+
+
+        </div>
+
+    </div>
+
+
+    <div class="resource-items">
+
+
+        <!-- TERRITORIES -->
+
+        <div class="resource-item">
+
+            <span class="resource-item-icon">
+                <i class="bi bi-geo-alt"></i>
+            </span>
+
+            <div>
+                <span class="resource-label">
+                    Territories
+                </span>
+
+                <strong>
+                    {{ active_territories }}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <!-- DRIVERS -->
+
+        <div class="resource-item">
+
+            <span class="resource-item-icon">
+                <i class="bi bi-person-badge"></i>
+            </span>
+
+            <div>
+                <span class="resource-label">
+                    Drivers
+                </span>
+
+                <strong>
+                    {{ active_drivers }}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <!-- TRUCKS -->
+
+        <div class="resource-item">
+
+            <span class="resource-item-icon">
+                <i class="bi bi-truck-front"></i>
+            </span>
+
+            <div>
+                <span class="resource-label">
+                    Trucks
+                </span>
+
+                <strong>
+                    {{ active_trucks }}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     RECENT ORDERS
+===================================================== -->
+
+<section class="dashboard-orders-panel">
+
+
+    <!-- PANEL HEADER -->
+
+    <div class="dashboard-section-header">
+
+        <div>
+
+            <h2 class="dashboard-section-title">
+
+                <i class="bi bi-clock-history"></i>
+
+                Recent Orders
+
+            </h2>
+
+            <p class="dashboard-section-description">
+                Most recently entered customer orders.
+            </p>
+
+        </div>
+
+
+        <!--
+            This is contextual to the Recent Orders panel,
+            rather than being another dashboard navigation menu.
+        -->
+
+        <a
+            href="{% url 'orders:order_list' %}"
+            class="dashboard-view-all"
+        >
+            View all orders
+
+            <i class="bi bi-arrow-right"></i>
+        </a>
+
+    </div>
+
+
+
+    {% if recent_orders %}
+
+        <div class="table-container">
+
+            <table class="dashboard-orders-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Order</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Cases</th>
+                        <th>Invoice Value</th>
+                        <th class="dashboard-action-heading">
+                            Action
+                        </th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for order in recent_orders %}
+
+                        <tr>
+
+
+                            <!-- ORDER -->
+
+                            <td>
+
+                                <a
+                                    href="{% url 'orders:order_detail' order.id %}"
+                                    class="dashboard-order-number"
+                                >
+                                    {{ order.serial_number }}
+                                </a>
+
+                                <span class="dashboard-secondary-text">
+
+                                    <i class="bi bi-calendar3"></i>
+
+                                    {{ order.order_date|date:"d-M-Y" }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- CUSTOMER -->
+
+                            <td>
+
+                                <span class="dashboard-primary-text">
+                                    {{ order.distributor.full_name }}
+                                </span>
+
+                                <span class="dashboard-secondary-text">
+
+                                    <i class="bi bi-geo-alt"></i>
+
+                                    {{ order.distributor.territory.name }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                                <span
+                                    class="status status-{{ order.status|lower }}"
+                                >
+                                    {{ order.get_status_display }}
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- CASES -->
+
+                            <td class="dashboard-number">
+                                {{ order.total_cases }}
+                            </td>
+
+
+
+                            <!-- INVOICE -->
+
+                            <td class="dashboard-money">
+                                AFN {{ order.invoice_value|floatformat:2 }}
+                            </td>
+
+
+
+                            <!-- ACTION -->
+
+                            <td class="dashboard-action">
+
+                                <a
+                                    href="{% url 'orders:order_detail' order.id %}"
+                                    class="dashboard-view-button"
+                                    title="View order"
+                                    aria-label="View order {{ order.serial_number }}"
+                                >
+
+                                    <i class="bi bi-eye"></i>
+
+                                    <span>
+                                        View
+                                    </span>
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    {% else %}
+
+        <div class="dashboard-empty">
+
+            <div class="dashboard-empty-icon">
+                <i class="bi bi-inbox"></i>
+            </div>
+
+            <h3>
+                No orders yet
+            </h3>
+
+            <p>
+                Orders created in the system will appear here.
+            </p>
+
+            <a
+                href="{% url 'orders:order_create' %}"
+                class="button button-primary"
+            >
+                <i class="bi bi-plus-lg"></i>
+                Create First Order
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+{% endblock %}

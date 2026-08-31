@@ -1,0 +1,322 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            Order Management System
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'orders/css/styles.css' %}"
+    >
+
+    {% block extra_css %}
+    {% endblock %}
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="main-header">
+
+        <div class="header-brand">
+
+            <a href="{% url 'orders:dashboard' %}">
+
+                <span class="brand-title">
+                    Order Management System
+                </span>
+
+                <span class="brand-subtitle">
+                    Sales Department
+                </span>
+
+            </a>
+
+        </div>
+
+
+        {% if user.is_authenticated %}
+
+            <div class="header-user">
+
+                <span>
+                    {{ user.username }}
+                </span>
+
+
+                <form
+                    method="post"
+                    action="{% url 'logout' %}"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="logout-button"
+                    >
+                        Logout
+                    </button>
+
+                </form>
+
+            </div>
+
+        {% endif %}
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN NAVIGATION
+    ====================================================== -->
+
+    {% if user.is_authenticated %}
+
+        <nav
+            class="main-nav"
+            aria-label="Main navigation"
+        >
+
+
+            <!-- =================================================
+                 DASHBOARD
+            ================================================== -->
+
+            <a
+                href="{% url 'orders:dashboard' %}"
+                class="nav-link"
+            >
+                Dashboard
+            </a>
+
+
+
+            <!-- =================================================
+                 OPERATIONS
+            ================================================== -->
+
+            <details class="nav-dropdown">
+
+                <summary class="nav-link nav-summary">
+
+                    Operations
+
+                    <span class="nav-caret">
+                        ▾
+                    </span>
+
+                </summary>
+
+
+                <div class="nav-dropdown-menu">
+
+
+                    <a href="{% url 'orders:order_list' %}">
+                        Orders
+                    </a>
+
+
+                    <a href="{% url 'orders:order_create' %}">
+                        New Order
+                    </a>
+
+
+                    <a href="{% url 'orders:dispatch_list' %}">
+                        Dispatches
+                    </a>
+
+
+                    <a href="{% url 'orders:dispatch_summary' %}">
+                        Dispatch Summary
+                    </a>
+
+
+                </div>
+
+            </details>
+
+
+
+            <!-- =================================================
+                 MANAGEMENT
+            ================================================== -->
+
+            <details class="nav-dropdown">
+
+                <summary class="nav-link nav-summary">
+
+                    Management
+
+                    <span class="nav-caret">
+                        ▾
+                    </span>
+
+                </summary>
+
+
+                <div class="nav-dropdown-menu">
+
+
+                    <a href="{% url 'orders:management_home' %}">
+                        Management Home
+                    </a>
+
+
+                    <a href="{% url 'orders:product_list' %}">
+                        Products
+                    </a>
+
+
+                    <a href="{% url 'orders:driver_list' %}">
+                        Drivers
+                    </a>
+
+
+                    <a href="{% url 'orders:truck_list' %}">
+                        Trucks
+                    </a>
+
+
+                    <a href="{% url 'orders:distributor_list' %}">
+                        Customers / Distributors
+                    </a>
+
+
+                    <a href="{% url 'orders:territory_list' %}">
+                        Territories
+                    </a>
+
+			{% if user.is_superuser %}
+
+    				<a href="{% url 'orders:user_list' %}">
+        				Users
+  				  </a>
+
+			{% endif %}
+
+
+                </div>
+
+            </details>
+
+
+
+            <!-- =================================================
+                 HELP
+            ================================================== -->
+
+            <a
+                href="{% url 'orders:help' %}"
+                class="nav-link"
+            >
+                Help
+            </a>
+
+
+        </nav>
+
+    {% endif %}
+
+
+
+    <!-- =====================================================
+         DJANGO MESSAGES
+    ====================================================== -->
+
+    {% if messages %}
+
+        <div class="messages-container">
+
+            {% for message in messages %}
+
+                <div
+                    class="
+                        message
+                        {% if message.tags %}
+                            message-{{ message.tags }}
+                        {% endif %}
+                    "
+                >
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+
+
+    <!-- =====================================================
+         PAGE CONTENT
+    ====================================================== -->
+
+    <main class="page-container">
+
+        {% block page_header %}
+        {% endblock %}
+
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="main-footer">
+
+        <p>
+            Order Management System
+            &copy;
+            {% now "Y" %}
+        </p>
+
+    </footer>
+
+
+
+    <!-- =====================================================
+         GLOBAL JAVASCRIPT
+    ====================================================== -->
+
+    <script
+        src="{% static 'orders/js/app.js' %}"
+        defer
+    ></script>
+
+
+    {% block extra_js %}
+    {% endblock %}
+
+
+</body>
+
+</html>

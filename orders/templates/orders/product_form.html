@@ -1,0 +1,45 @@
+{% extends "orders/base.html" %}
+
+{% block title %}{{ page_title }} | Order Management System{% endblock %}
+
+{% block page_header %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ page_title }}</h1>
+        <p class="page-subtitle">Maintain the product information used in orders and dispatches.</p>
+    </div>
+    <a href="{% url 'orders:product_list' %}" class="button button-secondary">Back to Products</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<form method="post" data-prevent-double-submit>
+    {% csrf_token %}
+    <section class="card">
+        {% if form.non_field_errors %}<div class="message message-error">{{ form.non_field_errors }}</div>{% endif %}
+
+        <div class="form-grid">
+            <div class="form-group"><label for="{{ form.sku.id_for_label }}">SKU</label>{{ form.sku }}{{ form.sku.errors }}</div>
+            <div class="form-group"><label for="{{ form.name.id_for_label }}">Product Name</label>{{ form.name }}{{ form.name.errors }}</div>
+            <div class="form-group"><label for="{{ form.package_type.id_for_label }}">Package Type</label>{{ form.package_type }}{{ form.package_type.errors }}</div>
+            <div class="form-group"><label for="{{ form.size.id_for_label }}">Size</label>{{ form.size }}{{ form.size.errors }}</div>
+            <div class="form-group"><label for="{{ form.units_per_case.id_for_label }}">Units per Case</label>{{ form.units_per_case }}{{ form.units_per_case.errors }}</div>
+            <div class="form-group"><label for="{{ form.case_weight_kg.id_for_label }}">Case Weight (kg)</label>{{ form.case_weight_kg }}{{ form.case_weight_kg.errors }}</div>
+            <div class="form-group"><label for="{{ form.wholesale_price.id_for_label }}">Wholesale Price (AFN)</label>{{ form.wholesale_price }}{{ form.wholesale_price.errors }}</div>
+            <div class="form-group"><label for="{{ form.retail_price.id_for_label }}">Retail Price (AFN)</label>{{ form.retail_price }}{{ form.retail_price.errors }}</div>
+            <div class="form-group form-group-full">
+                <label>Status</label>
+                <div class="form-check-row">{{ form.is_active }} <span>Active product</span></div>
+                {{ form.is_active.errors }}
+            </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="button-row">
+            <button type="submit" class="button button-primary">{% if editing %}Save Changes{% else %}Add Product{% endif %}</button>
+            <a href="{% url 'orders:product_list' %}" class="button button-secondary">Cancel</a>
+        </div>
+    </section>
+</form>
+{% endblock %}

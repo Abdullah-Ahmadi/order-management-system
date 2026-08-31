@@ -1,0 +1,432 @@
+{% extends "orders/base.html" %}
+
+
+{% block title %}
+Delivery Note | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            Delivery Note
+        </h1>
+
+        <p class="page-subtitle">
+            Dispatch {{ dispatch.dispatch_number }} —
+            {{ dispatch.order.distributor.full_name }}
+        </p>
+
+    </div>
+
+
+    <div class="button-row">
+
+        <a
+            href="{% url 'orders:delivery_note_print' dispatch.id %}"
+            class="button button-primary"
+            target="_blank"
+        >
+            Print 2 Copies
+        </a>
+
+
+        <a
+            href="{% url 'orders:delivery_note_edit' dispatch.id %}"
+            class="button button-secondary"
+        >
+            Record Returned Copy
+        </a>
+
+
+        <a
+            href="{% url 'orders:dispatch_detail' dispatch.id %}"
+            class="button button-secondary"
+        >
+            Back to Dispatch
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<!-- =====================================================
+     DELIVERY INFORMATION
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Delivery Information
+    </h2>
+
+
+    <div class="detail-grid">
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Delivery Note
+            </span>
+
+            <span class="detail-value">
+                {{ dispatch.dispatch_number }}
+            </span>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Date Created
+            </span>
+
+            <span class="detail-value">
+                {{ delivery_note.created_at|date:"d-M-Y H:i" }}
+            </span>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Customer
+            </span>
+
+            <span class="detail-value">
+
+                {{ dispatch.order.distributor.full_name }}
+
+                ({{ dispatch.order.distributor.customer_code }})
+
+            </span>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Territory
+            </span>
+
+            <span class="detail-value">
+                {{ dispatch.order.distributor.territory.name }}
+            </span>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Driver
+            </span>
+
+            <span class="detail-value">
+
+                {% if dispatch.driver %}
+
+                    {{ dispatch.driver.full_name }}
+                    ({{ dispatch.driver.driver_code }})
+
+                {% elif dispatch.external_driver_name %}
+
+                    {{ dispatch.external_driver_name }}
+
+                {% else %}
+
+                    Not specified
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Truck
+            </span>
+
+            <span class="detail-value">
+
+                {% if dispatch.truck %}
+
+                    {{ dispatch.truck.plate_number }}
+
+                {% elif dispatch.external_truck_plate %}
+
+                    {{ dispatch.external_truck_plate }}
+
+                {% else %}
+
+                    Not specified
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     PRODUCTS
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Products Delivered
+    </h2>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Product
+                    </th>
+
+                    <th>
+                        Description
+                    </th>
+
+                    <th>
+                        Quantity (Cases)
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for item in dispatch.items.all %}
+
+                    <tr>
+
+                        <td>
+                            {{ item.order_item.product.name }}
+                        </td>
+
+
+                        <td>
+
+                            {{ item.order_item.product.size }}
+
+                            ×
+
+                            {{ item.order_item.product.units_per_case }}
+
+                        </td>
+
+
+                        <td>
+                            <strong>
+                                {{ item.quantity }}
+                            </strong>
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="3">
+                            No products are included in this dispatch.
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     RETURNED COPY
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Returned Customer Copy
+    </h2>
+
+
+    <p class="page-subtitle">
+        These details are recorded after the signed copy
+        returns from the customer.
+    </p>
+
+
+    <div
+        class="detail-grid"
+        style="margin-top: 18px;"
+    >
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Receiver Name
+            </span>
+
+            <span class="detail-value">
+
+                {% if delivery_note.receiver_name %}
+
+                    {{ delivery_note.receiver_name }}
+
+                {% else %}
+
+                    Not recorded
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                ID Number
+            </span>
+
+            <span class="detail-value">
+
+                {% if delivery_note.receiver_id %}
+
+                    {{ delivery_note.receiver_id }}
+
+                {% else %}
+
+                    Not recorded
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Phone Number
+            </span>
+
+            <span class="detail-value">
+
+                {% if delivery_note.receiver_phone %}
+
+                    {{ delivery_note.receiver_phone }}
+
+                {% else %}
+
+                    Not recorded
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Delivered At
+            </span>
+
+            <span class="detail-value">
+
+                {% if delivery_note.delivered_at %}
+
+                    {{ delivery_note.delivered_at|date:"d-M-Y H:i" }}
+
+                {% else %}
+
+                    Not recorded
+
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+    </div>
+
+
+    {% if delivery_note.notes %}
+
+        <div style="margin-top: 20px;">
+
+            <strong>
+                Notes
+            </strong>
+
+
+            <p>
+                {{ delivery_note.notes|linebreaksbr }}
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+    <div class="button-row">
+
+        <a
+            href="{% url 'orders:delivery_note_edit' dispatch.id %}"
+            class="button button-secondary"
+        >
+            Record / Update Returned Copy
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

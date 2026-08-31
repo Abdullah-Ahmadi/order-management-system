@@ -1,0 +1,562 @@
+{% extends "orders/base.html" %}
+
+
+{% block title %}
+Order {{ order.serial_number }} | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+<div class="page-header">
+
+    <div>
+        <h1 class="page-title">
+            Order {{ order.serial_number }}
+        </h1>
+
+        <p class="page-subtitle">
+            {{ order.distributor.full_name }}
+        </p>
+    </div>
+
+
+    <div class="button-row">
+
+        <a
+            href="{% url 'orders:order_edit' order.id %}"
+            class="button button-secondary"
+        >
+            Edit Order
+        </a>
+
+        <a
+            href="{% url 'orders:dispatch_create' order.id %}"
+            class="button button-primary"
+        >
+            Create Dispatch
+        </a>
+
+        <a
+            href="{% url 'orders:order_print' order.id %}"
+            class="button button-secondary"
+            target="_blank"
+        >
+            Print Order
+        </a>
+
+        <a
+            href="{% url 'orders:order_list' %}"
+            class="button button-secondary"
+        >
+            Back
+        </a>
+
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =====================================================
+     ORDER INFORMATION
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Order Information
+    </h2>
+
+
+    <div class="detail-grid">
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Serial Number
+            </span>
+
+            <span class="detail-value">
+                {{ order.serial_number }}
+            </span>
+        </div>
+
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Order Date
+            </span>
+
+            <span class="detail-value">
+                {{ order.order_date|date:"d-M-Y" }}
+            </span>
+        </div>
+
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Distributor
+            </span>
+
+            <span class="detail-value">
+                {{ order.distributor.full_name }}
+            </span>
+        </div>
+
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Customer ID
+            </span>
+
+            <span class="detail-value">
+                {{ order.distributor.customer_code }}
+            </span>
+        </div>
+
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Territory
+            </span>
+
+            <span class="detail-value">
+                {{ order.distributor.territory.name }}
+            </span>
+        </div>
+
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Customer Type
+            </span>
+
+            <span class="detail-value">
+                {{ order.distributor.get_customer_type_display }}
+            </span>
+        </div>
+
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Payment Status
+            </span>
+
+            <span class="detail-value">
+                {{ order.distributor.get_payment_status_display }}
+            </span>
+        </div>
+
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Status
+            </span>
+
+            <span class="detail-value">
+
+                <span
+                    class="status status-{{ order.status|lower }}"
+                >
+                    {{ order.get_status_display }}
+                </span>
+
+            </span>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     ORDER TOTALS
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Order Summary
+    </h2>
+
+
+    <div class="summary-grid">
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Total Cases
+            </span>
+
+            <span class="summary-value">
+                {{ order.total_cases }}
+            </span>
+
+        </div>
+
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Total Weight
+            </span>
+
+            <span class="summary-value">
+                {{ order.total_weight_kg|floatformat:2 }} kg
+            </span>
+
+        </div>
+
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Total Weight
+            </span>
+
+            <span class="summary-value">
+                {% widthratio order.total_weight_kg 1000 1 %} tons
+            </span>
+
+        </div>
+
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Invoice Value
+            </span>
+
+            <span class="summary-value">
+                AFN {{ order.invoice_value|floatformat:2 }}
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     ORDER PRODUCTS
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Products
+    </h2>
+
+
+    {% if order.items.all %}
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Product</th>
+                        <th>Package</th>
+                        <th>Size</th>
+                        <th>Cases</th>
+                        <th>Price / Case</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+
+                    {% for item in order.items.all %}
+
+                        <tr>
+
+                            <td>
+                                {{ item.product.sku }}
+                            </td>
+
+                            <td>
+                                {{ item.product.name }}
+                            </td>
+
+                            <td>
+                                {{ item.product.get_package_type_display }}
+                            </td>
+
+                            <td>
+                                {{ item.product.size }}
+                            </td>
+
+                            <td>
+                                {{ item.quantity }}
+                            </td>
+
+                            <td>
+                                AFN {{ item.unit_price|floatformat:2 }}
+                            </td>
+
+                            <td>
+                                AFN
+                                {% widthratio item.quantity 1 item.unit_price %}
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            No products are attached to this order.
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+
+<!-- =====================================================
+     DISPATCHES
+===================================================== -->
+
+<section class="card">
+
+    <div class="page-header">
+
+        <div>
+            <h2 class="card-title">
+                Dispatches
+            </h2>
+        </div>
+
+        <a
+            href="{% url 'orders:dispatch_create' order.id %}"
+            class="button button-primary"
+        >
+            New Dispatch
+        </a>
+
+    </div>
+
+
+    {% if order.dispatches.all %}
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Dispatch Number</th>
+                        <th>Driver</th>
+                        <th>Truck</th>
+                        <th>Weight</th>
+                        <th>Freight Category</th>
+                        <th>Total Freight</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+
+                    {% for dispatch in order.dispatches.all %}
+
+                        <tr>
+
+                            <td>
+                                {{ dispatch.dispatch_number }}
+                            </td>
+
+
+                            <td>
+
+                                {% if dispatch.driver %}
+
+                                    {{ dispatch.driver.full_name }}
+
+                                {% elif dispatch.external_driver_name %}
+
+                                    {{ dispatch.external_driver_name }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if dispatch.truck %}
+
+                                    {{ dispatch.truck.plate_number }}
+
+                                {% elif dispatch.external_truck_plate %}
+
+                                    {{ dispatch.external_truck_plate }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+                                {{ dispatch.total_weight_tons|floatformat:2 }}
+                                tons
+                            </td>
+
+
+                            <td>
+                                {{ dispatch.freight_category }}
+                            </td>
+
+
+                            <td>
+                                AFN {{ dispatch.total_freight|floatformat:2 }}
+                            </td>
+
+
+                            <td class="table-actions">
+
+                                <a
+                                    href="{% url 'orders:dispatch_detail' dispatch.id %}"
+                                    class="button button-secondary"
+                                >
+                                    View
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <p>
+                No dispatch has been created for this order.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+
+<!-- =====================================================
+     PURCHASE REQUEST
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Purchase Request
+    </h2>
+
+
+    {% if purchase_request %}
+
+        <div class="summary-grid">
+
+            <div class="summary-item">
+
+                <span class="summary-label">
+                    Subtotal
+                </span>
+
+                <span class="summary-value">
+                    AFN {{ purchase_request.subtotal|floatformat:2 }}
+                </span>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <span class="summary-label">
+                    Freight
+                </span>
+
+                <span class="summary-value">
+                    AFN {{ purchase_request.total_freight|floatformat:2 }}
+                </span>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <span class="summary-label">
+                    Payable Amount
+                </span>
+
+                <span class="summary-value">
+                    AFN {{ purchase_request.payable_amount|floatformat:2 }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="button-row">
+
+            <a
+                href="{% url 'orders:purchase_request_detail' order.id %}"
+                class="button button-secondary"
+            >
+                View Purchase Request
+            </a>
+
+            <a
+                href="{% url 'orders:purchase_request_print' order.id %}"
+                class="button button-secondary"
+                target="_blank"
+            >
+                Print
+            </a>
+
+        </div>
+
+    {% else %}
+
+        <p>
+            A Purchase Request will be available after a dispatch is created.
+        </p>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

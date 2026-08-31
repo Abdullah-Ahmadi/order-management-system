@@ -1,0 +1,785 @@
+{% extends "orders/base.html" %}
+
+
+{% block title %}
+Help | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            Help
+        </h1>
+
+        <p class="page-subtitle">
+            Quick guidance for using the Order Management System.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<!-- =====================================================
+     GETTING STARTED
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Getting Started
+    </h2>
+
+    <p>
+        The Order Management System is used to create customer
+        orders, prepare dispatches, manage delivery documents,
+        review daily dispatch activity, and maintain the master
+        data used by the system.
+    </p>
+
+    <div class="summary-grid">
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Orders
+            </span>
+
+            <span class="summary-value">
+                Record customer orders
+            </span>
+
+        </div>
+
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Dispatches
+            </span>
+
+            <span class="summary-value">
+                Prepare truck loads
+            </span>
+
+        </div>
+
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Dispatch Summary
+            </span>
+
+            <span class="summary-value">
+                Review daily activity
+            </span>
+
+        </div>
+
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Management
+            </span>
+
+            <span class="summary-value">
+                Maintain master data
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     DAILY WORKFLOW
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Typical Daily Workflow
+    </h2>
+
+    <div class="help-steps">
+
+
+        <div class="help-step">
+
+            <span class="help-step-number">
+                1
+            </span>
+
+            <div>
+
+                <h3>
+                    Create the Order
+                </h3>
+
+                <p>
+                    Open <strong>Operations → New Order</strong>.
+                    Select the customer, add the ordered products,
+                    enter the quantities, and save the order.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="help-step">
+
+            <span class="help-step-number">
+                2
+            </span>
+
+            <div>
+
+                <h3>
+                    Create a Dispatch
+                </h3>
+
+                <p>
+                    Open the order and select
+                    <strong>Create Dispatch</strong>.
+                    Remaining products and quantities are loaded
+                    automatically.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="help-step">
+
+            <span class="help-step-number">
+                3
+            </span>
+
+            <div>
+
+                <h3>
+                    Confirm Transport Information
+                </h3>
+
+                <p>
+                    Select a company driver and truck, or enter
+                    external transport information when required.
+                    These details may be added later if they are
+                    not yet known.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="help-step">
+
+            <span class="help-step-number">
+                4
+            </span>
+
+            <div>
+
+                <h3>
+                    Print the Required Documents
+                </h3>
+
+                <p>
+                    Use the Dispatch, Purchase Request, and
+                    Delivery Note pages to review and print the
+                    required documents.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="help-step">
+
+            <span class="help-step-number">
+                5
+            </span>
+
+            <div>
+
+                <h3>
+                    Review the Daily Dispatch Summary
+                </h3>
+
+                <p>
+                    Open <strong>Dispatch Summary</strong> and
+                    select the required date. The report can be
+                    printed, exported to Excel, or downloaded as
+                    an image for electronic sharing.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     ORDERS
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Orders
+    </h2>
+
+
+    <details class="help-topic">
+
+        <summary>
+            How do I create an order?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                Use <strong>Operations → New Order</strong>.
+                Choose the province or territory to help locate
+                the correct customer, then add the required
+                products and quantities.
+            </p>
+
+            <p>
+                The order serial number and date are generated
+                automatically but may be changed when necessary.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            How do I find an existing order?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                Open the Orders page and begin typing in the
+                search field. Results update automatically.
+            </p>
+
+            <p>
+                You can search using details such as the order
+                number, customer, customer ID, or territory.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            What do the order statuses mean?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                <strong>Draft</strong> means the order is still
+                being prepared.
+            </p>
+
+            <p>
+                <strong>Confirmed</strong> means the order has
+                been approved for normal processing.
+            </p>
+
+            <p>
+                <strong>Cancelled</strong> means the order should
+                no longer be dispatched.
+            </p>
+
+        </div>
+
+    </details>
+
+</section>
+
+
+
+<!-- =====================================================
+     DISPATCHES
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Dispatches
+    </h2>
+
+
+    <details class="help-topic">
+
+        <summary>
+            Do I need to re-enter the products from the order?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                No. When a new dispatch is created from an order,
+                the system automatically loads the products that
+                still remain to be dispatched.
+            </p>
+
+            <p>
+                If the truck is carrying only part of the order,
+                reduce the quantity in the
+                <strong>Dispatch Now</strong> column.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            What happens when an order needs several trucks?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                Create the first dispatch and enter the quantities
+                carried by that truck.
+            </p>
+
+            <p>
+                When another dispatch is created for the same
+                order, the system shows the quantities already
+                dispatched and automatically calculates what
+                remains.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            What is the difference between Order Date and Dispatch Date?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                <strong>Order Date</strong> records when the
+                customer's order was created.
+            </p>
+
+            <p>
+                <strong>Dispatch Date</strong> records the date
+                assigned to the specific truck or dispatch.
+            </p>
+
+            <p>
+                Dispatch Date is independent and can be edited.
+                For example, an order may be created on Monday
+                while one truck leaves on Tuesday and another
+                leaves on Wednesday.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            What if the truck or driver is not known yet?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                Driver and truck information can be left blank
+                initially. Edit the dispatch later when the
+                information becomes available.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            What if transportation is external?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                Leave the company driver or truck field empty and
+                enter the external driver name or external truck
+                plate instead.
+            </p>
+
+            <p>
+                External transport details apply only to that
+                dispatch and do not need to be added to the
+                company's permanent driver or truck lists.
+            </p>
+
+        </div>
+
+    </details>
+
+</section>
+
+
+
+<!-- =====================================================
+     DISPATCH SUMMARY
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Dispatch Summary
+    </h2>
+
+
+    <details class="help-topic">
+
+        <summary>
+            Which date does the Dispatch Summary use?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                The Daily Dispatch Summary uses
+                <strong>Dispatch Date</strong>, not Order Date.
+            </p>
+
+            <p>
+                This means a truck appears in the report for the
+                day assigned to its dispatch.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            How can I share the Dispatch Summary?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                The Dispatch Summary provides three options:
+            </p>
+
+            <p>
+                <strong>Print Summary</strong> for paper copies.
+            </p>
+
+            <p>
+                <strong>Export Excel</strong> for spreadsheet
+                sharing or further analysis.
+            </p>
+
+            <p>
+                <strong>Download Image</strong> creates a PNG
+                version that can be attached to applications such
+                as WhatsApp.
+            </p>
+
+        </div>
+
+    </details>
+
+</section>
+
+
+
+<!-- =====================================================
+     MANAGEMENT
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Management
+    </h2>
+
+
+    <details class="help-topic">
+
+        <summary>
+            What is the Management section used for?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                Management contains the permanent information used
+                throughout the OMS, including Products, Drivers,
+                Trucks, Customers / Distributors, and Territories.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            What happens when I deactivate something?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                Deactivation prevents inactive master data from
+                being selected for normal new transactions while
+                preserving older records that already used it.
+            </p>
+
+            <p>
+                This is preferable to deleting historical
+                information.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            How are Driver IDs created?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                When a new driver is added, the system automatically
+                suggests the next Driver ID, such as
+                <strong>DRV0001</strong>.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            How are Customer IDs created?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                When a new customer is added, the system
+                automatically suggests the next customer ID, such
+                as <strong>CUST000001</strong>.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            Why can't two active customers use the same territory?
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                The OMS allows only one active distributor for a
+                territory at a time.
+            </p>
+
+            <p>
+                If a different customer must become active for the
+                same territory, deactivate the currently active
+                customer first.
+            </p>
+
+        </div>
+
+    </details>
+
+</section>
+
+
+
+<!-- =====================================================
+     SEARCHING
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Searching and Filtering
+    </h2>
+
+    <p>
+        Most major list pages support live searching.
+        Begin typing in the Search field and matching records
+        will appear automatically.
+    </p>
+
+    <p>
+        Filters such as Active / Inactive also update the list
+        immediately on supported pages.
+    </p>
+
+    <p>
+        Use <strong>Clear</strong> to remove the current search
+        and filters.
+    </p>
+
+</section>
+
+
+
+<!-- =====================================================
+     TROUBLESHOOTING
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Common Problems
+    </h2>
+
+
+    <details class="help-topic">
+
+        <summary>
+            A product, driver, truck, or customer is missing from a selection list.
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                Check the appropriate Management page and make
+                sure the record is marked <strong>Active</strong>.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            I changed a dispatch but the printed document still shows old information.
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                Save the dispatch first, then reopen or refresh
+                the printable document before printing again.
+            </p>
+
+        </div>
+
+    </details>
+
+
+    <details class="help-topic">
+
+        <summary>
+            Search results do not seem to update.
+        </summary>
+
+        <div class="help-topic-content">
+
+            <p>
+                Refresh the page and try again. If the problem
+                continues, report it to the system administrator.
+            </p>
+
+        </div>
+
+    </details>
+
+</section>
+
+
+
+<!-- =====================================================
+     SUPPORT
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Need More Help?
+    </h2>
+
+    <p>
+        If the system displays an unexpected error or a business
+        transaction cannot be completed using the instructions
+        above, contact your OMS system administrator or supervisor.
+    </p>
+
+    <p class="help-text">
+        When reporting a problem, include the Order Number or
+        Dispatch Number when applicable and describe what you were
+        trying to do when the issue occurred.
+    </p>
+
+</section>
+
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "orders/base.html" %}
+
+{% block title %}Management | Order Management System{% endblock %}
+
+{% block page_header %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Management</h1>
+        <p class="page-subtitle">Manage the master data used by orders and dispatches.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="management-grid">
+    <a class="management-card" href="{% url 'orders:product_list' %}">
+        <h2 class="management-card-title">Products</h2>
+        <p class="management-card-meta">{{ active_product_count }} active of {{ product_count }} total</p>
+    </a>
+
+    <a class="management-card" href="{% url 'orders:driver_list' %}">
+        <h2 class="management-card-title">Drivers</h2>
+        <p class="management-card-meta">{{ active_driver_count }} active of {{ driver_count }} total</p>
+    </a>
+
+    <a class="management-card" href="{% url 'orders:truck_list' %}">
+        <h2 class="management-card-title">Trucks</h2>
+        <p class="management-card-meta">{{ active_truck_count }} active of {{ truck_count }} total</p>
+    </a>
+
+    <a class="management-card" href="{% url 'orders:distributor_list' %}">
+        <h2 class="management-card-title">Customers / Distributors</h2>
+        <p class="management-card-meta">{{ active_distributor_count }} active of {{ distributor_count }} total</p>
+    </a>
+
+    <a class="management-card" href="{% url 'orders:territory_list' %}">
+        <h2 class="management-card-title">Territories</h2>
+        <p class="management-card-meta">{{ active_territory_count }} active of {{ territory_count }} total</p>
+    </a>
+</section>
+{% endblock %}

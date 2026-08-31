@@ -1,0 +1,793 @@
+{% extends "orders/base.html" %}
+
+
+{% block title %}
+Orders | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            Orders
+        </h1>
+
+        <p class="page-subtitle">
+            Search and review customer orders
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <a
+            href="{% url 'orders:order_create' %}"
+            class="button button-primary"
+        >
+            New Order
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="card">
+
+
+    <!-- =================================================
+         FILTERS
+    ================================================== -->
+
+    <form
+        method="get"
+        class="filter-bar"
+        id="order-filter-form"
+        action="{% url 'orders:order_list' %}"
+    >
+
+
+        <!-- SEARCH -->
+
+        <div class="filter-item-grow">
+
+            <label for="q">
+                Search
+            </label>
+
+            <input
+                type="search"
+                id="q"
+                name="q"
+                value="{{ search }}"
+                placeholder="Serial, customer, customer ID, territory..."
+                autocomplete="off"
+            >
+
+
+        </div>
+
+
+
+        <!-- STATUS -->
+
+        <div class="filter-item">
+
+            <label for="status">
+                Status
+            </label>
+
+            <select
+                id="status"
+                name="status"
+            >
+
+                <option value="">
+                    All Statuses
+                </option>
+
+                {% for value, label in status_choices %}
+
+                    <option
+                        value="{{ value }}"
+                        {% if selected_status == value %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ label }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+
+        <!-- DATE -->
+
+        <div class="filter-item">
+
+            <label for="date">
+                Order Date
+            </label>
+
+            <input
+                type="date"
+                id="date"
+                name="date"
+                {% if selected_date %}
+                    value="{{ selected_date|date:'Y-m-d' }}"
+                {% endif %}
+            >
+
+        </div>
+
+
+
+        <!-- FALLBACK FILTER BUTTON -->
+
+        <div>
+
+            <button
+                type="submit"
+                class="button button-primary"
+                id="order-filter-submit"
+            >
+                Filter
+            </button>
+
+        </div>
+
+
+
+        <!-- CLEAR -->
+
+        <div>
+
+            <button
+                type="button"
+                class="button button-secondary"
+                id="order-filter-clear"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    </form>
+
+
+
+    <!-- =================================================
+         LIVE FILTER STATUS
+    ================================================== -->
+
+    <div
+        id="order-filter-status"
+        role="status"
+        aria-live="polite"
+        style="
+            min-height: 22px;
+            margin-bottom: 10px;
+            color: #6b7280;
+            font-size: 0.8rem;
+        "
+    ></div>
+
+
+
+    <!-- =================================================
+         ORDER RESULTS
+
+         JavaScript replaces only this section when the
+         filters change.
+    ================================================== -->
+
+    <div id="order-results">
+
+
+        {% if orders %}
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Serial</th>
+                            <th class="order-date-column">Date</th>
+                            <th>Distributor</th>
+                            <th>Cust ID</th>
+                            <th>Territory</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Cases</th>
+                            <th class="order-weight-column">Weight</th>
+                            <th class="order-invoice-column">Invoice Value</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for order in orders %}
+
+                            <tr>
+
+                                <td>
+
+                                    <strong>
+                                        {{ order.serial_number }}
+                                    </strong>
+
+                                </td>
+
+
+                                <td>
+                                    {{ order.order_date|date:"d-M-y" }}
+                                </td>
+
+
+                                <td>
+                                    {{ order.distributor.full_name }}
+                                </td>
+
+
+                                <td>
+                                    {{ order.distributor.customer_code }}
+                                </td>
+
+
+                                <td>
+                                    {{ order.distributor.territory.name }}
+                                </td>
+
+
+                                <td>
+                                    {{ order.distributor.get_customer_type_display }}
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        class="status status-{{ order.status|lower }}"
+                                    >
+                                        {{ order.get_status_display }}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+                                    {{ order.total_cases }}
+                                </td>
+
+
+                                <td>
+                                    {{ order.total_weight_tons|floatformat:2 }} t
+                                </td>
+
+
+                                <td>
+                                    AFN {{ order.invoice_value|floatformat:"0" }}
+                                </td>
+
+
+                                <td class="table-actions">
+
+                                    <a
+                                        href="{% url 'orders:order_detail' order.id %}"
+                                        class="button button-secondary"
+                                    >
+                                        View
+                                    </a>
+
+
+                                    <a
+                                        href="{% url 'orders:order_edit' order.id %}"
+                                        class="button button-secondary"
+                                    >
+                                        Edit
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <p>
+                    No orders matched your search.
+                </p>
+
+                <a
+                    href="{% url 'orders:order_create' %}"
+                    class="button button-primary"
+                >
+                    Create Order
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script>
+(function () {
+
+    "use strict";
+
+
+    /* =====================================================
+       ELEMENTS
+    ====================================================== */
+
+    const filterForm =
+        document.getElementById(
+            "order-filter-form"
+        );
+
+    if (!filterForm) {
+        return;
+    }
+
+
+    const searchInput =
+        document.getElementById("q");
+
+    const statusSelect =
+        document.getElementById("status");
+
+    const dateInput =
+        document.getElementById("date");
+
+    const clearButton =
+        document.getElementById(
+            "order-filter-clear"
+        );
+
+    const filterStatus =
+        document.getElementById(
+            "order-filter-status"
+        );
+
+    const resultsContainer =
+        document.getElementById(
+            "order-results"
+        );
+
+
+    if (
+        !searchInput ||
+        !statusSelect ||
+        !dateInput ||
+        !clearButton ||
+        !filterStatus ||
+        !resultsContainer
+    ) {
+        return;
+    }
+
+
+
+    /* =====================================================
+       STATE
+    ====================================================== */
+
+    let debounceTimer = null;
+
+    let currentRequest = null;
+
+
+
+    /* =====================================================
+       BUILD FILTER URL
+    ====================================================== */
+
+    function buildFilterUrl() {
+
+        const url = new URL(
+            filterForm.action,
+            window.location.origin
+        );
+
+
+        const search =
+            searchInput.value.trim();
+
+        const status =
+            statusSelect.value;
+
+        const date =
+            dateInput.value;
+
+
+        if (search) {
+            url.searchParams.set(
+                "q",
+                search
+            );
+        }
+
+
+        if (status) {
+            url.searchParams.set(
+                "status",
+                status
+            );
+        }
+
+
+        if (date) {
+            url.searchParams.set(
+                "date",
+                date
+            );
+        }
+
+
+        return url;
+    }
+
+
+
+    /* =====================================================
+       LOADING MESSAGE
+    ====================================================== */
+
+    function setLoading(isLoading) {
+
+        resultsContainer.setAttribute(
+            "aria-busy",
+            isLoading
+                ? "true"
+                : "false"
+        );
+
+
+        if (isLoading) {
+
+            filterStatus.textContent =
+                "Updating results...";
+
+        } else {
+
+            filterStatus.textContent = "";
+
+        }
+
+    }
+
+
+
+    /* =====================================================
+       FETCH FILTERED ORDERS
+    ====================================================== */
+
+    async function updateResults() {
+
+        const url =
+            buildFilterUrl();
+
+
+        /*
+         * If another search request is still running,
+         * cancel it.
+         *
+         * This matters when a user types quickly.
+         */
+
+        if (currentRequest) {
+            currentRequest.abort();
+        }
+
+
+        currentRequest =
+            new AbortController();
+
+
+        setLoading(true);
+
+
+        try {
+
+            const response =
+                await fetch(
+                    url.toString(),
+                    {
+                        method: "GET",
+
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        },
+
+                        signal:
+                            currentRequest.signal
+                    }
+                );
+
+
+            if (!response.ok) {
+                throw new Error(
+                    "Could not load filtered orders."
+                );
+            }
+
+
+            const html =
+                await response.text();
+
+
+            const parser =
+                new DOMParser();
+
+
+            const documentResponse =
+                parser.parseFromString(
+                    html,
+                    "text/html"
+                );
+
+
+            const newResults =
+                documentResponse.getElementById(
+                    "order-results"
+                );
+
+
+            if (!newResults) {
+                throw new Error(
+                    "Order results were not found."
+                );
+            }
+
+
+            /*
+             * Replace only the results.
+             *
+             * The filter controls remain untouched,
+             * so typing focus is never lost.
+             */
+
+            resultsContainer.innerHTML =
+                newResults.innerHTML;
+
+
+            /*
+             * Keep the browser URL in sync without
+             * refreshing the page.
+             *
+             * This means filtered URLs can still be
+             * copied/bookmarked.
+             */
+
+            window.history.replaceState(
+                {},
+                "",
+                url.pathname +
+                url.search
+            );
+
+
+            filterStatus.textContent = "";
+
+        }
+
+        catch (error) {
+
+            /*
+             * AbortError simply means a newer search
+             * replaced an older one.
+             */
+
+            if (error.name === "AbortError") {
+                return;
+            }
+
+
+            console.error(error);
+
+
+            filterStatus.textContent =
+                "Could not update the results. Please try again.";
+
+        }
+
+        finally {
+
+            /*
+             * Only clear loading state when this request
+             * has not already been replaced.
+             */
+
+            if (
+                !currentRequest ||
+                !currentRequest.signal.aborted
+            ) {
+                setLoading(false);
+            }
+
+        }
+
+    }
+
+
+
+    /* =====================================================
+       DEBOUNCED TEXT SEARCH
+    ====================================================== */
+
+    function queueSearch() {
+
+        window.clearTimeout(
+            debounceTimer
+        );
+
+
+        /*
+         * 250 ms is fast enough to feel immediate,
+         * while avoiding one server request for every
+         * single keystroke.
+         */
+
+        debounceTimer =
+            window.setTimeout(
+                updateResults,
+                250
+            );
+
+    }
+
+
+
+    /* =====================================================
+       SEARCH INPUT
+
+       Example:
+       "ka"
+       already searches for names/territories/etc.
+       containing "ka".
+    ====================================================== */
+
+    searchInput.addEventListener(
+        "input",
+        queueSearch
+    );
+
+
+
+    /* =====================================================
+       STATUS FILTER
+
+       Select filters should react immediately.
+    ====================================================== */
+
+    statusSelect.addEventListener(
+        "change",
+        function () {
+
+            window.clearTimeout(
+                debounceTimer
+            );
+
+            updateResults();
+
+        }
+    );
+
+
+
+    /* =====================================================
+       DATE FILTER
+    ====================================================== */
+
+    dateInput.addEventListener(
+        "change",
+        function () {
+
+            window.clearTimeout(
+                debounceTimer
+            );
+
+            updateResults();
+
+        }
+    );
+
+
+
+    /* =====================================================
+       NORMAL FORM SUBMISSION
+
+       We intercept it when JavaScript is enabled.
+       Without JavaScript, Django's original GET form
+       still works normally.
+    ====================================================== */
+
+    filterForm.addEventListener(
+        "submit",
+        function (event) {
+
+            event.preventDefault();
+
+
+            window.clearTimeout(
+                debounceTimer
+            );
+
+
+            updateResults();
+
+        }
+    );
+
+
+
+    /* =====================================================
+       CLEAR FILTERS
+    ====================================================== */
+
+    clearButton.addEventListener(
+        "click",
+        function () {
+
+            window.clearTimeout(
+                debounceTimer
+            );
+
+
+            searchInput.value = "";
+
+            statusSelect.value = "";
+
+            dateInput.value = "";
+
+
+            searchInput.focus();
+
+
+            updateResults();
+
+        }
+    );
+
+})();
+</script>
+
+{% endblock %}

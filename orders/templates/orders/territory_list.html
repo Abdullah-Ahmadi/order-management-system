@@ -1,0 +1,375 @@
+{% extends "orders/base.html" %}
+{% load static %}
+
+
+{% block title %}
+Territories | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            Territories
+        </h1>
+
+        <p class="page-subtitle">
+            Manage territories and their freight rates.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'orders:territory_create' %}"
+        class="button button-primary"
+    >
+        Add Territory
+    </a>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<section class="card">
+
+
+    <!-- =================================================
+         FILTERS
+    ================================================== -->
+
+    <form
+        method="get"
+        action="{% url 'orders:territory_list' %}"
+        class="filter-bar"
+        id="territory-filter-form"
+    >
+
+
+        <!-- SEARCH -->
+
+        <div class="filter-item-grow">
+
+            <label for="q">
+                Search
+            </label>
+
+            <input
+                type="search"
+                id="q"
+                name="q"
+                value="{{ search }}"
+                placeholder="Territory name..."
+                autocomplete="off"
+            >
+
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="filter-item">
+
+            <label for="status">
+                Status
+            </label>
+
+            <select
+                id="status"
+                name="status"
+            >
+
+                <option value="">
+                    All Statuses
+                </option>
+
+                <option
+                    value="active"
+                    {% if selected_status == "active" %}
+                        selected
+                    {% endif %}
+                >
+                    Active
+                </option>
+
+                <option
+                    value="inactive"
+                    {% if selected_status == "inactive" %}
+                        selected
+                    {% endif %}
+                >
+                    Inactive
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- FILTER -->
+
+        <div>
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                Filter
+            </button>
+
+        </div>
+
+
+        <!-- CLEAR -->
+
+        <div>
+
+            <button
+                type="button"
+                class="button button-secondary"
+                id="territory-filter-clear"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    </form>
+
+
+
+    <!-- =================================================
+         LIVE SEARCH STATUS
+    ================================================== -->
+
+    <div
+        id="territory-filter-status"
+        class="help-text"
+        role="status"
+        aria-live="polite"
+    ></div>
+
+
+
+    <!-- =================================================
+         RESULTS
+    ================================================== -->
+
+    <div id="territory-results">
+
+        {% if territories %}
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Territory
+                            </th>
+
+                            <th>
+                                Low Freight Rate
+                            </th>
+
+                            <th>
+                                Medium Freight Rate
+                            </th>
+
+                            <th>
+                                High Freight Rate
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for territory in territories %}
+
+                            <tr>
+
+
+                                <!-- TERRITORY -->
+
+                                <td>
+
+                                    <strong>
+                                        {{ territory.name }}
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- LOW FREIGHT -->
+
+                                <td>
+                                    AFN
+                                    {{ territory.low_freight_rate|floatformat:2 }}
+                                </td>
+
+
+                                <!-- MEDIUM FREIGHT -->
+
+                                <td>
+                                    AFN
+                                    {{ territory.medium_freight_rate|floatformat:2 }}
+                                </td>
+
+
+                                <!-- HIGH FREIGHT -->
+
+                                <td>
+                                    AFN
+                                    {{ territory.high_freight_rate|floatformat:2 }}
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    <span
+                                        class="
+                                            status
+                                            {% if territory.is_active %}
+                                                status-active
+                                            {% else %}
+                                                status-inactive
+                                            {% endif %}
+                                        "
+                                    >
+
+                                        {% if territory.is_active %}
+                                            Active
+                                        {% else %}
+                                            Inactive
+                                        {% endif %}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+
+                                <td>
+
+                                    <div class="management-table-actions">
+
+
+                                        <!-- EDIT -->
+
+                                        <a
+                                            href="{% url 'orders:territory_edit' territory.id %}"
+                                            class="button button-secondary"
+                                        >
+                                            Edit
+                                        </a>
+
+
+                                        <!-- ACTIVATE / DEACTIVATE -->
+
+                                        <form
+                                            method="post"
+                                            action="{% url 'orders:territory_toggle_status' territory.id %}"
+                                            class="inline-form"
+                                        >
+
+                                            {% csrf_token %}
+
+
+                                            <button
+                                                type="submit"
+                                                class="
+                                                    button
+                                                    {% if territory.is_active %}
+                                                        button-danger
+                                                    {% else %}
+                                                        button-success
+                                                    {% endif %}
+                                                "
+                                                data-confirm="
+                                                    {% if territory.is_active %}
+                                                        Deactivate this territory?
+                                                    {% else %}
+                                                        Activate this territory?
+                                                    {% endif %}
+                                                "
+                                            >
+
+                                                {% if territory.is_active %}
+                                                    Deactivate
+                                                {% else %}
+                                                    Activate
+                                                {% endif %}
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <p>
+                    No territories matched your search.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'orders/js/territory_list.js' %}"
+    defer
+></script>
+
+{% endblock %}

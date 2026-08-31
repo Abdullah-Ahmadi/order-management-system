@@ -1,0 +1,626 @@
+/* =========================================================
+   ABI CUSTOMER PURCHASE REQUEST
+========================================================= */
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: #000;
+
+    background: #e5e7eb;
+}
+
+
+
+/* =========================================================
+   PRINT CONTROLS
+========================================================= */
+
+.print-controls {
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 14px;
+
+    width: 210mm;
+
+    margin:
+        18px auto
+        12px;
+
+    padding:
+        0 8mm;
+}
+
+
+.copy-control {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 14px;
+}
+
+
+.copy-control label {
+    font-weight: 600;
+}
+
+
+.copy-control input {
+    width: 62px;
+
+    padding:
+        8px
+        7px;
+
+    border:
+        1px solid
+        #c5cbd3;
+
+    border-radius: 4px;
+
+    background: #fff;
+
+    font-size: 14px;
+
+    text-align: center;
+}
+
+
+.print-button {
+    padding:
+        9px
+        17px;
+
+    border: 0;
+    border-radius: 5px;
+
+    background: #1f2937;
+    color: #fff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.print-button:hover {
+    background: #111827;
+}
+
+
+
+/* =========================================================
+   A4 PAGE
+========================================================= */
+
+.purchase-request-page {
+    position: relative;
+
+    width: 210mm;
+    height: 297mm;
+
+    margin:
+        0 auto
+        20px;
+
+    padding:
+        10mm
+        13mm
+        9mm;
+
+    overflow: hidden;
+
+    background: #fff;
+
+    box-shadow:
+        0 3px 14px
+        rgba(0, 0, 0, 0.14);
+}
+
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.request-header {
+    position: relative;
+
+    height: 31mm;
+}
+
+
+.abi-logo {
+    position: absolute;
+
+    top: 1mm;
+    left: 0;
+
+    width: 22mm;
+    height: 22mm;
+
+    object-fit: contain;
+}
+
+
+.header-center {
+    width: 100%;
+
+    padding-top: 1mm;
+
+    text-align: center;
+}
+
+
+.company-name {
+    font-family:
+        "Monotype Corsiva",
+        "Segoe Script",
+        cursive;
+
+    font-size: 17pt;
+    font-weight: 700;
+
+    line-height: 1.05;
+}
+
+
+.company-address {
+    margin-top: 2mm;
+
+    font-size: 8.5pt;
+}
+
+
+.document-title {
+    margin-top: 2mm;
+
+    font-size: 7.5pt;
+}
+
+
+
+/* =========================================================
+   INFORMATION SECTION
+========================================================= */
+
+.request-information {
+    display: grid;
+
+    grid-template-columns:
+        62mm
+        1fr;
+
+    column-gap: 0;
+
+    align-items: start;
+
+    margin-top: 17mm;
+
+    margin-left: 12mm;
+    margin-right: 17mm;
+}
+
+
+.information-list {
+    width: 100%;
+}
+
+
+.information-row {
+    display: grid;
+
+    grid-template-columns:
+        30mm
+        1fr;
+
+    align-items: end;
+
+    height: 5.3mm;
+
+    font-size: 8.2pt;
+}
+
+
+.information-label {
+    padding-right: 2mm;
+
+    text-align: right;
+
+    white-space: nowrap;
+}
+
+
+.information-value {
+    min-width: 0;
+
+    padding:
+        0
+        1mm
+        0.8mm;
+
+    border-bottom:
+        0.25mm solid
+        #555;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+
+/* =========================================================
+   CUSTOMER BOX
+========================================================= */
+
+.customer-box {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    height: 11mm;
+
+    margin-top: 5.3mm;
+
+    border:
+        0.35mm solid
+        #000;
+
+    font-size: 9pt;
+
+    white-space: nowrap;
+}
+
+
+
+/* =========================================================
+   PRODUCT TABLE
+========================================================= */
+
+.purchase-product-table {
+    width: 100%;
+
+    margin-top: 7mm;
+
+    border-collapse: collapse;
+
+    table-layout: fixed;
+}
+
+
+.brand-column {
+    width: 22%;
+}
+
+
+.pack-column {
+    width: 22%;
+}
+
+
+.quantity-column {
+    width: 22%;
+}
+
+
+.price-column {
+    width: 15%;
+}
+
+
+.amount-column {
+    width: 19%;
+}
+
+
+.purchase-product-table th,
+.purchase-product-table td {
+    height: 4.7mm;
+
+    padding:
+        0.45mm
+        1.5mm;
+
+    border:
+        0.3mm solid
+        #000;
+
+    vertical-align: middle;
+
+    font-size: 7.1pt;
+
+    line-height: 1.05;
+}
+
+
+.purchase-product-table th {
+    height: 9mm;
+
+    text-align: center;
+
+    font-size: 8pt;
+    font-weight: 400;
+}
+
+
+.number-cell {
+    text-align: right;
+}
+
+
+.shaded-row td {
+    background: #d9d9d9;
+}
+
+
+.emphasis-row td {
+    font-weight: 700;
+}
+
+
+
+/* =========================================================
+   TABLE FOOTER
+========================================================= */
+
+.purchase-product-table tfoot td {
+    height: 5.4mm;
+}
+
+
+.footer-empty {
+    border: 0 !important;
+
+    background: transparent !important;
+}
+
+
+.total-cases {
+    border: 0 !important;
+
+    text-align: center;
+
+    font-size: 7.5pt !important;
+}
+
+
+.subtotal-label {
+    text-align: right;
+
+    font-size: 7.5pt !important;
+}
+
+
+.subtotal-amount {
+    text-align: right;
+
+    font-size: 7.5pt !important;
+}
+
+
+
+/* =========================================================
+   FREIGHT / PAYABLE
+========================================================= */
+
+.payment-summary {
+    width: 77mm;
+
+    margin:
+        14mm
+        27mm
+        0
+        auto;
+
+    border-collapse: collapse;
+}
+
+
+.payment-summary td {
+    height: 7.2mm;
+
+    padding:
+        1mm
+        2mm;
+
+    border:
+        0.3mm solid
+        #000;
+
+    font-size: 7pt;
+}
+
+
+.payment-label {
+    width: 59%;
+
+    text-align: right;
+}
+
+
+.payment-value {
+    text-align: right;
+}
+
+
+
+/* =========================================================
+   AMOUNT IN WORDS
+========================================================= */
+
+.amount-in-words {
+    display: flex;
+
+    align-items: baseline;
+    justify-content: flex-end;
+
+    gap: 2mm;
+
+    margin-top: 16mm;
+
+    padding-right: 4mm;
+
+    font-size: 7pt;
+    font-weight: 700;
+}
+
+
+.amount-in-words-dari {
+    font-size: 7.5pt;
+}
+
+
+
+/* =========================================================
+   SIGNATURES
+========================================================= */
+
+.signature-area {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    column-gap: 28mm;
+
+    align-items: start;
+
+    margin-top: 16mm;
+
+    padding:
+        0
+        3mm;
+}
+
+
+.signature-line-row {
+    display: flex;
+
+    align-items: flex-end;
+
+    font-size: 8pt;
+
+    white-space: nowrap;
+}
+
+
+.signature-line {
+    display: block;
+
+    width: 25mm;
+
+    margin-left: 1mm;
+
+    border-bottom:
+        0.25mm solid
+        #000;
+}
+
+
+.finance-line {
+    width: 39mm;
+}
+
+
+.printed-time {
+    margin-top: 3mm;
+    margin-left: 30mm;
+
+    font-size: 6.5pt;
+}
+
+
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@page {
+    size: A4 portrait;
+    margin: 0;
+}
+
+
+@media print {
+
+    html,
+    body {
+        width: 210mm;
+
+        margin: 0;
+        padding: 0;
+
+        background: #fff;
+    }
+
+
+    .print-controls {
+        display: none !important;
+    }
+
+
+    .purchase-request-page {
+        width: 210mm;
+        height: 297mm;
+
+        margin: 0;
+
+        box-shadow: none;
+
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+
+    .purchase-request-page:not(:last-child) {
+        break-after: page;
+        page-break-after: always;
+    }
+
+
+    .purchase-request-page:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+
+
+    .shaded-row td {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+
+    .abi-logo {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+}

@@ -1,0 +1,508 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+
+    <title>
+        Purchase Request {{ order.serial_number }}
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="{% static 'orders/css/purchase_request_print.css' %}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =================================================
+         PRINT CONTROLS
+    ================================================== -->
+
+    <div class="print-controls">
+
+        <div class="copy-control">
+
+            <label for="purchase-request-copy-count">
+                Copies
+            </label>
+
+            <input
+                type="number"
+                id="purchase-request-copy-count"
+                min="1"
+                max="10"
+                value="2"
+                inputmode="numeric"
+            >
+
+        </div>
+
+
+        <button
+            type="button"
+            class="print-button"
+            id="purchase-request-print-button"
+        >
+            Print Purchase Request
+        </button>
+
+    </div>
+
+
+
+    <!-- =================================================
+         PRINTED PAGES ARE INSERTED HERE
+    ================================================== -->
+
+    <div id="purchase-request-pages"></div>
+
+
+
+    <!-- =================================================
+         ONE PURCHASE REQUEST TEMPLATE
+    ================================================== -->
+
+    <template id="purchase-request-page-template">
+
+
+        <section class="purchase-request-page">
+
+
+            <!-- =============================================
+                 HEADER
+            ============================================== -->
+
+            <header class="request-header">
+
+
+                <img
+                    src="{% static 'orders/logo/abi_logo.png' %}"
+                    alt="ABI Logo"
+                    class="abi-logo"
+                >
+
+
+                <div class="header-center">
+
+                    <div class="company-name">
+                        Afghanistan Beverage Industries Ltd.
+                    </div>
+
+
+                    <div class="company-address">
+                        Industrial Park, Pul - I - Charkhi, Kabul
+                    </div>
+
+
+                    <div class="document-title">
+                        Customer Purchase Request
+                    </div>
+
+                </div>
+
+
+            </header>
+
+
+
+            <!-- =============================================
+                 ORDER / CUSTOMER INFORMATION
+            ============================================== -->
+
+            <section class="request-information">
+
+
+                <div class="information-list">
+
+
+                    <div class="information-row">
+
+                        <span class="information-label">
+                            Payment Term:
+                        </span>
+
+                        <span class="information-value">
+                            {{ order.distributor.get_payment_status_display }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="information-row">
+
+                        <span class="information-label">
+                            Address:
+                        </span>
+
+                        <span class="information-value">
+                            {{ order.distributor.territory.name }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="information-row">
+
+                        <span class="information-label">
+                            Order Date:
+                        </span>
+
+                        <span class="information-value">
+                            {{ order.order_date|date:"d-M-y" }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="information-row">
+
+                        <span class="information-label">
+                            FG/L.D.#:
+                        </span>
+
+                        <span class="information-value">
+                            {{ dispatch_numbers }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="information-row">
+
+                        <span class="information-label">
+                            Vehicle Nr:
+                        </span>
+
+                        <span class="information-value">
+                            {{ vehicle_numbers }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="information-row">
+
+                        <span class="information-label">
+                            Driver Name:
+                        </span>
+
+                        <span class="information-value">
+                            {{ driver_names }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="information-row">
+
+                        <span class="information-label">
+                            Total Ton:
+                        </span>
+
+                        <span class="information-value">
+                            {{ total_ton_display }}
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- CUSTOMER BOX -->
+
+                <div class="customer-box">
+
+                    {{ order.distributor.full_name }}
+
+                    &nbsp;
+
+                    ({{ order.distributor.customer_code }})
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =============================================
+                 PRODUCT TABLE
+            ============================================== -->
+
+            <table class="purchase-product-table">
+
+                <colgroup>
+
+                    <col class="brand-column">
+                    <col class="pack-column">
+                    <col class="quantity-column">
+                    <col class="price-column">
+                    <col class="amount-column">
+
+                </colgroup>
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Brand
+                        </th>
+
+
+                        <th>
+                            Pack
+                        </th>
+
+
+                        <th>
+                            Quantity
+                            <br>
+                            ( in Case )
+                        </th>
+
+
+                        <th>
+                            Price
+                            <br>
+                            (Per Case)
+                        </th>
+
+
+                        <th>
+                            Total
+                            <br>
+                            Amount
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for row in purchase_rows %}
+
+                        <tr
+                            class="
+                                {% if row.shade %}
+                                    shaded-row
+                                {% endif %}
+
+                                {% if row.emphasis %}
+                                    emphasis-row
+                                {% endif %}
+                            "
+                        >
+
+                            <td>
+                                {{ row.brand }}
+                            </td>
+
+
+                            <td>
+                                {{ row.pack }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ row.quantity }}
+                            </td>
+
+
+                            <td class="number-cell">
+                                {{ row.price_display }}
+                            </td>
+
+
+                            <td class="number-cell">
+
+                                {{ row.amount_display }}
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+
+                <tfoot>
+
+                    <tr>
+
+                        <td
+                            colspan="2"
+                            class="footer-empty"
+                        ></td>
+
+
+                        <td class="total-cases">
+                            {{ total_cases_display }}
+                        </td>
+
+
+                        <td class="subtotal-label">
+                            Subtotal:
+                        </td>
+
+
+                        <td class="subtotal-amount">
+                            {{ subtotal_display }}
+                        </td>
+
+                    </tr>
+
+                </tfoot>
+
+            </table>
+
+
+
+            <!-- =============================================
+                 FREIGHT / PAYABLE
+            ============================================== -->
+
+            <table class="payment-summary">
+
+                <tbody>
+
+                    <tr>
+
+                        <td class="payment-label">
+                            Freight
+                        </td>
+
+                        <td class="payment-value">
+                            {{ freight_display }}
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td class="payment-label">
+                            Payable amount:
+                        </td>
+
+                        <td class="payment-value">
+                            {{ payable_display }}
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+
+
+            <!-- =============================================
+                 AMOUNT IN WORDS
+            ============================================== -->
+
+            <div class="amount-in-words">
+
+                <span
+                    class="amount-in-words-dari"
+                    dir="rtl"
+                >
+                    مجموعه به حروف
+                </span>
+
+                <span class="amount-in-words-english">
+                    {{ amount_words }}
+                </span>
+
+            </div>
+
+
+
+            <!-- =============================================
+                 SIGNATURES
+            ============================================== -->
+
+            <div class="signature-area">
+
+
+                <div class="signature-block">
+
+                    <div class="signature-line-row">
+
+                        <span>
+                            Sales Clerk:
+                        </span>
+
+                        <span class="signature-line"></span>
+
+                    </div>
+
+
+                    <div class="printed-time">
+
+                        Printed:
+
+                        {% now "g:i A" %}
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="signature-block">
+
+                    <div class="signature-line-row">
+
+                        <span>
+                            Finance Accountant:
+                        </span>
+
+                        <span class="signature-line finance-line"></span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </template>
+
+
+
+    <script
+        src="{% static 'orders/js/purchase_request_print.js' %}"
+        defer
+    ></script>
+
+
+</body>
+
+</html>

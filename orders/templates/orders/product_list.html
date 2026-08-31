@@ -1,0 +1,408 @@
+{% extends "orders/base.html" %}
+{% load static %}
+
+{% block title %}
+Products | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            Products
+        </h1>
+
+        <p class="page-subtitle">
+            Add, edit, search, and activate or deactivate products.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'orders:product_create' %}"
+        class="button button-primary"
+    >
+        Add Product
+    </a>
+
+</div>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="card">
+
+
+    <!-- =================================================
+         FILTERS
+    ================================================== -->
+
+    <form
+        method="get"
+        action="{% url 'orders:product_list' %}"
+        class="filter-bar"
+        id="product-filter-form"
+    >
+
+
+        <!-- SEARCH -->
+
+        <div class="filter-item-grow">
+
+            <label for="q">
+                Search
+            </label>
+
+            <input
+                type="search"
+                id="q"
+                name="q"
+                value="{{ search }}"
+                placeholder="SKU, product name, size..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <!-- PACKAGE TYPE -->
+
+        <div class="filter-item">
+
+            <label for="package_type">
+                Package
+            </label>
+
+            <select
+                id="package_type"
+                name="package_type"
+            >
+
+                <option value="">
+                    All Packages
+                </option>
+
+                {% for value, label in package_choices %}
+
+                    <option
+                        value="{{ value }}"
+                        {% if selected_package_type == value %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ label }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="filter-item">
+
+            <label for="status">
+                Status
+            </label>
+
+            <select
+                id="status"
+                name="status"
+            >
+
+                <option value="">
+                    All Statuses
+                </option>
+
+                <option
+                    value="active"
+                    {% if selected_status == "active" %}
+                        selected
+                    {% endif %}
+                >
+                    Active
+                </option>
+
+                <option
+                    value="inactive"
+                    {% if selected_status == "inactive" %}
+                        selected
+                    {% endif %}
+                >
+                    Inactive
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- FALLBACK FILTER BUTTON -->
+
+        <div>
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                Filter
+            </button>
+
+        </div>
+
+
+        <!-- CLEAR -->
+
+        <div>
+
+            <button
+                type="button"
+                class="button button-secondary"
+                id="product-filter-clear"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    </form>
+
+
+
+    <!-- =================================================
+         LIVE SEARCH STATUS
+    ================================================== -->
+
+    <div
+        id="product-filter-status"
+        class="help-text"
+        role="status"
+        aria-live="polite"
+    ></div>
+
+
+
+    <!-- =================================================
+         RESULTS
+    ================================================== -->
+
+    <div id="product-results">
+
+        {% if products %}
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>SKU</th>
+                            <th>Product</th>
+                            <th>Package</th>
+                            <th>Size</th>
+                            <th>Units / Case</th>
+                            <th>Case Weight</th>
+                            <th>Wholesale</th>
+                            <th>Retail</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for product in products %}
+
+                            <tr>
+
+
+                                <!-- SKU -->
+
+                                <td>
+
+                                    <strong>
+                                        {{ product.sku }}
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- PRODUCT -->
+
+                                <td>
+                                    {{ product.name }}
+                                </td>
+
+
+                                <!-- PACKAGE -->
+
+                                <td>
+                                    {{ product.get_package_type_display }}
+                                </td>
+
+
+                                <!-- SIZE -->
+
+                                <td>
+                                    {{ product.size }}
+                                </td>
+
+
+                                <!-- UNITS / CASE -->
+
+                                <td>
+                                    {{ product.units_per_case }}
+                                </td>
+
+
+                                <!-- CASE WEIGHT -->
+
+                                <td>
+                                    {{ product.case_weight_kg|floatformat:3 }} kg
+                                </td>
+
+
+                                <!-- WHOLESALE -->
+
+                                <td>
+                                    AFN {{ product.wholesale_price|floatformat:2 }}
+                                </td>
+
+
+                                <!-- RETAIL -->
+
+                                <td>
+                                    AFN {{ product.retail_price|floatformat:2 }}
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    <span
+                                        class="
+                                            status
+                                            {% if product.is_active %}
+                                                status-active
+                                            {% else %}
+                                                status-inactive
+                                            {% endif %}
+                                        "
+                                    >
+
+                                        {% if product.is_active %}
+                                            Active
+                                        {% else %}
+                                            Inactive
+                                        {% endif %}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+
+                                <td class="table-actions">
+
+                                    <a
+                                        href="{% url 'orders:product_edit' product.id %}"
+                                        class="button button-secondary"
+                                    >
+                                        Edit
+                                    </a>
+
+
+                                    <form
+                                        method="post"
+                                        action="{% url 'orders:product_toggle_status' product.id %}"
+                                        class="inline-form"
+                                    >
+
+                                        {% csrf_token %}
+
+
+                                        <button
+                                            type="submit"
+                                            class="
+                                                button
+                                                {% if product.is_active %}
+                                                    button-danger
+                                                {% else %}
+                                                    button-success
+                                                {% endif %}
+                                            "
+                                            data-confirm="
+                                                {% if product.is_active %}
+                                                    Deactivate this product?
+                                                {% else %}
+                                                    Activate this product?
+                                                {% endif %}
+                                            "
+                                        >
+
+                                            {% if product.is_active %}
+                                                Deactivate
+                                            {% else %}
+                                                Activate
+                                            {% endif %}
+
+                                        </button>
+
+                                    </form>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <p>
+                    No products matched your search.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'orders/js/product_list.js' %}"
+    defer
+></script>
+
+{% endblock %}

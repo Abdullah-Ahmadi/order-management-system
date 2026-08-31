@@ -1,0 +1,474 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Dispatch {{ dispatch.dispatch_number }}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'orders/css/dispatch_print.css' %}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         PRINT CONTROLS
+    ====================================================== -->
+
+    <div class="print-controls">
+
+        <button
+            type="button"
+            class="print-button"
+            data-print
+        >
+            Print Dispatch
+        </button>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         ONE PHYSICAL A4 SHEET
+         FOUR DISPATCH COPIES
+    ====================================================== -->
+
+    <main class="dispatch-sheet">
+
+
+        {% for copy_name in copy_names %}
+
+            <section class="dispatch-copy">
+
+
+                <!-- =================================================
+                     MAIN CONTENT
+                ================================================== -->
+
+                <div class="dispatch-content">
+
+
+                    <!-- =============================================
+                         HEADER
+                    ============================================== -->
+
+                    <div class="dispatch-header">
+
+
+                        <!-- LOGO -->
+
+                        <div class="dispatch-logo">
+
+                            <img
+                                src="{% static 'orders/logo/abi_logo.png' %}"
+                                alt="ABI Logo"
+                            >
+
+                        </div>
+
+
+
+                        <!-- COMPANY -->
+
+                        <div class="dispatch-heading">
+
+                            <div class="company-name">
+                                Afghanistan Beverage Industries Ltd.
+                            </div>
+
+                            <div class="document-title">
+                                Finish Goods Load Dispatch
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- DISPATCH META -->
+
+                        <table class="dispatch-meta">
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td class="meta-label">
+                                        Date:
+                                    </td>
+
+                                    <td class="meta-value">
+                                        {{ dispatch.dispatch_date|date:"d-M-y" }}
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td class="meta-label">
+                                        F/G,LD#:
+                                    </td>
+
+                                    <td class="meta-value">
+                                        {{ dispatch.dispatch_number }}
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td class="meta-label">
+                                        TERRITORY:
+                                    </td>
+
+                                    <td class="meta-value">
+                                        {{ dispatch.order.distributor.territory.name }}
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td class="meta-label">
+                                        Weight:
+                                    </td>
+
+                                    <td class="meta-value">
+                                        {{ dispatch.total_weight_tons|floatformat:2 }}
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+
+                    <!-- =============================================
+                         CUSTOMER
+                    ============================================== -->
+
+                    <div class="customer-row">
+
+                        <span class="customer-label">
+                            Customer Name:
+                        </span>
+
+
+                        <span class="customer-name">
+
+                            {{ dispatch.order.distributor.full_name }}
+
+                            &nbsp;
+
+                            ({{ dispatch.order.distributor.customer_code }})
+
+                            &nbsp;-
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- =============================================
+                         PRINT TIME
+                    ============================================== -->
+
+                    <div class="print-time">
+
+                        Print time:
+
+                        &nbsp;
+
+                        {% now "n/j/y g:i A" %}
+
+                    </div>
+
+
+
+                    <!-- =============================================
+                         PRODUCT MATRIX
+                    ============================================== -->
+
+                    <table class="product-matrix">
+
+                        <thead>
+
+                            <tr>
+
+                                <th class="packing-heading">
+                                    PACKING
+                                </th>
+
+
+                                {% for column in product_columns %}
+
+                                    <th>
+                                        {{ column.label }}
+                                    </th>
+
+                                {% endfor %}
+
+
+                                <th class="total-heading">
+                                    Total QTY
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                            {% for row in packing_rows %}
+
+                                <tr>
+
+                                    <td class="packing-name">
+                                        {{ row.packing }}
+                                    </td>
+
+
+                                    {% for quantity in row.quantities %}
+
+                                        <td>
+
+                                            {% if quantity %}
+
+                                                {{ quantity }}
+
+                                            {% else %}
+
+                                                -
+
+                                            {% endif %}
+
+                                        </td>
+
+                                    {% endfor %}
+
+
+                                    <td class="row-total">
+
+                                        {% if row.total %}
+
+                                            {{ row.total }}
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+
+
+                    <!-- =============================================
+                         GRAND TOTAL
+                    ============================================== -->
+
+                    <div class="grand-total-row">
+
+                        <span>
+                            {{ total_cases }}
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- =============================================
+                         SIGNATURES
+                    ============================================== -->
+
+                    <div class="signature-row">
+
+
+                        <div class="signature-item">
+
+                            <span>
+                                Finance Sig:
+                            </span>
+
+                            <span class="signature-line"></span>
+
+                        </div>
+
+
+                        <div class="signature-item">
+
+                            <span>
+                                Sales Sig:
+                            </span>
+
+                            <span class="signature-line"></span>
+
+                        </div>
+
+
+                        <div class="signature-item">
+
+                            <span>
+                                Security Sig:
+                            </span>
+
+                            <span class="signature-line"></span>
+
+                        </div>
+
+
+                        <div class="signature-item">
+
+                            <span>
+                                Warehouse Sig:
+                            </span>
+
+                            <span class="signature-line"></span>
+
+                        </div>
+
+
+                    </div>
+
+
+
+  <!-- =============================================
+     TRANSPORT
+============================================== -->
+
+<div class="transport-row">
+
+
+    <!-- DRIVER -->
+
+    <div class="transport-item">
+
+        <span class="transport-label">
+            Driver Name:
+        </span>
+
+
+        <span class="transport-value">
+
+            {% if dispatch.driver %}
+
+                {{ dispatch.driver.full_name }}
+
+            {% elif dispatch.external_driver_name %}
+
+                {{ dispatch.external_driver_name }}
+
+            {% else %}
+
+                -
+
+            {% endif %}
+
+        </span>
+
+    </div>
+
+
+
+    <!-- TRUCK -->
+
+    <div class="transport-item">
+
+        <span class="transport-label">
+            Truck#:
+        </span>
+
+
+        <span class="transport-value">
+
+            {% if dispatch.truck %}
+
+                {{ dispatch.truck.plate_number }}
+
+            {% elif dispatch.external_truck_plate %}
+
+                {{ dispatch.external_truck_plate }}
+
+            {% else %}
+
+                -
+
+            {% endif %}
+
+        </span>
+
+    </div>
+
+
+</div>
+
+
+
+                <!-- =================================================
+                     VERTICAL COPY LABEL
+                ================================================== -->
+
+                <div class="vertical-copy-label">
+
+                    {{ copy_name }}
+
+                </div>
+
+
+            </section>
+
+        {% endfor %}
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         GLOBAL PRINT JS
+    ====================================================== -->
+
+    <script
+        src="{% static 'orders/js/app.js' %}"
+        defer
+    ></script>
+
+
+</body>
+
+</html>

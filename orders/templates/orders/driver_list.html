@@ -1,0 +1,350 @@
+{% extends "orders/base.html" %}
+{% load static %}
+
+
+{% block title %}
+Drivers | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            Drivers
+        </h1>
+
+        <p class="page-subtitle">
+            Manage company drivers used for dispatches.
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'orders:driver_create' %}"
+        class="button button-primary"
+    >
+        Add Driver
+    </a>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<section class="card">
+
+
+    <!-- =================================================
+         FILTERS
+    ================================================== -->
+
+    <form
+        method="get"
+        action="{% url 'orders:driver_list' %}"
+        class="filter-bar"
+        id="driver-filter-form"
+    >
+
+
+        <!-- SEARCH -->
+
+        <div class="filter-item-grow">
+
+            <label for="q">
+                Search
+            </label>
+
+            <input
+                type="search"
+                id="q"
+                name="q"
+                value="{{ search }}"
+                placeholder="Driver ID or driver name..."
+                autocomplete="off"
+            >
+
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="filter-item">
+
+            <label for="status">
+                Status
+            </label>
+
+            <select
+                id="status"
+                name="status"
+            >
+
+                <option value="">
+                    All Statuses
+                </option>
+
+                <option
+                    value="active"
+                    {% if selected_status == "active" %}
+                        selected
+                    {% endif %}
+                >
+                    Active
+                </option>
+
+                <option
+                    value="inactive"
+                    {% if selected_status == "inactive" %}
+                        selected
+                    {% endif %}
+                >
+                    Inactive
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- NORMAL FALLBACK -->
+
+        <div>
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                Filter
+            </button>
+
+        </div>
+
+
+        <!-- CLEAR -->
+
+        <div>
+
+            <button
+                type="button"
+                class="button button-secondary"
+                id="driver-filter-clear"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    </form>
+
+
+
+    <!-- =================================================
+         LIVE SEARCH STATUS
+    ================================================== -->
+
+    <div
+        id="driver-filter-status"
+        class="help-text"
+        role="status"
+        aria-live="polite"
+    ></div>
+
+
+
+    <!-- =================================================
+         RESULTS
+    ================================================== -->
+
+    <div id="driver-results">
+
+        {% if drivers %}
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Driver ID
+                            </th>
+
+                            <th>
+                                Driver Name
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for driver in drivers %}
+
+                            <tr>
+
+
+                                <!-- DRIVER ID -->
+
+                                <td>
+
+                                    <strong>
+                                        {{ driver.driver_code }}
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- DRIVER NAME -->
+
+                                <td>
+                                    {{ driver.full_name }}
+                                </td>
+
+
+                                <!-- STATUS -->
+
+                                <td>
+
+                                    <span
+                                        class="
+                                            status
+                                            {% if driver.is_active %}
+                                                status-active
+                                            {% else %}
+                                                status-inactive
+                                            {% endif %}
+                                        "
+                                    >
+
+                                        {% if driver.is_active %}
+                                            Active
+                                        {% else %}
+                                            Inactive
+                                        {% endif %}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+
+                                <td>
+
+                                    <div class="management-table-actions">
+
+
+                                        <!-- EDIT -->
+
+                                        <a
+                                            href="{% url 'orders:driver_edit' driver.id %}"
+                                            class="button button-secondary"
+                                        >
+                                            Edit
+                                        </a>
+
+
+                                        <!-- ACTIVATE / DEACTIVATE -->
+
+                                        <form
+                                            method="post"
+                                            action="{% url 'orders:driver_toggle_status' driver.id %}"
+                                            class="inline-form"
+                                        >
+
+                                            {% csrf_token %}
+
+
+                                            <button
+                                                type="submit"
+                                                class="
+                                                    button
+                                                    {% if driver.is_active %}
+                                                        button-danger
+                                                    {% else %}
+                                                        button-success
+                                                    {% endif %}
+                                                "
+                                                data-confirm="
+                                                    {% if driver.is_active %}
+                                                        Deactivate this driver?
+                                                    {% else %}
+                                                        Activate this driver?
+                                                    {% endif %}
+                                                "
+                                            >
+
+                                                {% if driver.is_active %}
+                                                    Deactivate
+                                                {% else %}
+                                                    Activate
+                                                {% endif %}
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <p>
+                    No drivers matched your search.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'orders/js/driver_list.js' %}"
+    defer
+></script>
+
+{% endblock %}

@@ -1,0 +1,546 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+
+    <title>
+        Delivery Note {{ dispatch.dispatch_number }}
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="{% static 'orders/css/delivery_note_print.css' %}"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =================================================
+         PRINT CONTROLS
+    ================================================== -->
+
+    <div class="delivery-print-controls">
+
+        <div class="copy-message">
+            2 copies will be printed.
+        </div>
+
+
+        <button
+            type="button"
+            class="delivery-print-button"
+            data-print
+        >
+            Print Delivery Note
+        </button>
+
+    </div>
+
+
+
+    <!-- =================================================
+         TWO DELIVERY NOTE COPIES
+    ================================================== -->
+
+    <main class="delivery-note-pages">
+
+
+        {% for copy in delivery_note_copies %}
+
+
+            <section class="delivery-note-page">
+
+
+                <!-- =========================================
+                     DOCUMENT TITLE
+                ========================================== -->
+
+                <div class="delivery-title">
+                    DELIVERY NOTE
+                </div>
+
+
+
+                <!-- =========================================
+                     COMPANY HEADER
+                ========================================== -->
+
+                <header class="delivery-company-header">
+
+
+                    <div class="delivery-logo">
+
+                        <img
+                            src="{% static 'orders/logo/abi_logo.png' %}"
+                            alt="ABI Logo"
+                        >
+
+                    </div>
+
+
+
+                    <div class="delivery-company-english">
+
+                        <div class="delivery-company-name">
+                            Afghanistan Beverage Industries Ltd.
+                        </div>
+
+
+                        <div class="delivery-company-address">
+                            Pul-I-Charkhi Industrial Park, Kabul Afghanistan
+                        </div>
+
+
+                        <div class="delivery-company-phone">
+                            PABX: +9379 888 00 00 - 09
+                        </div>
+
+                    </div>
+
+
+
+                    <div
+                        class="delivery-company-dari"
+                        dir="rtl"
+                    >
+
+                        <div class="delivery-company-dari-name">
+                            مرکز صنایع نوشابه افغانستان
+                        </div>
+
+
+                        <div>
+                            پلچرخی پارکهای صنعتی کابل افغانستان
+                        </div>
+
+
+                        <div>
+                            شماره تماس:
+                            +9379 888 00 00 - 09
+                        </div>
+
+                    </div>
+
+
+                </header>
+
+
+
+                <!-- =========================================
+                     CUSTOMER / DOCUMENT INFORMATION
+                ========================================== -->
+
+                <section class="delivery-information">
+
+
+                    <div class="delivery-info-left">
+
+
+                        <div class="delivery-customer">
+
+                            {{ dispatch.order.distributor.full_name }}
+
+                            &nbsp;
+
+                            ({{ dispatch.order.distributor.customer_code }})
+
+                        </div>
+
+
+                        <div class="delivery-info-row">
+
+                            <span class="delivery-info-label">
+                                Territory:
+                            </span>
+
+                            <span class="delivery-info-value">
+                                {{ dispatch.order.distributor.territory.name }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="delivery-info-row">
+
+                            <span class="delivery-info-label">
+                                POC
+                            </span>
+
+                            <span class="delivery-info-value">
+                                .
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="delivery-info-right">
+
+
+                        <div class="delivery-info-row">
+
+                            <span class="delivery-info-label"></span>
+
+                            <span class="delivery-info-value">
+                                {{ delivery_note.created_at|date:"d-M-y" }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="delivery-info-row">
+
+                            <span class="delivery-info-label">
+                                Delivery Note Nr.
+                            </span>
+
+                            <span class="delivery-info-value">
+                                {{ dispatch.dispatch_number }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="delivery-info-row">
+
+                            <span class="delivery-info-label">
+                                Order Given Via
+                            </span>
+
+                            <span class="delivery-info-value">
+                                Email
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                </section>
+
+
+
+                <!-- =========================================
+                     PRODUCT LIST
+                ========================================== -->
+
+                <table class="delivery-product-table">
+
+
+                    <colgroup>
+
+                        <col class="delivery-product-name-column">
+
+                        <col class="delivery-product-description-column">
+
+                        <col class="delivery-product-quantity-column">
+
+                    </colgroup>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Item name
+                            </th>
+
+                            <th>
+                                Description
+                            </th>
+
+                            <th>
+                                Quantity (in cases)
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        {% for row in delivery_rows %}
+
+                            <tr>
+
+                                <td>
+                                    {{ row.item_name }}
+                                </td>
+
+
+                                <td>
+                                    {{ row.description }}
+                                </td>
+
+
+                                <td class="delivery-product-quantity">
+                                    {{ row.quantity }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+
+                <!-- =========================================
+                     SIGNATURE / RECEIPT AREA
+                ========================================== -->
+
+                <section class="delivery-signature-section">
+
+
+                    <!-- ABI SALES -->
+
+                    <div class="delivery-signature-side">
+
+
+                        <div class="delivery-signature-heading">
+                            ABI Sales:
+                        </div>
+
+
+                        <table class="delivery-small-table">
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td class="delivery-small-label">
+                                        Shipment Facility
+                                    </td>
+
+                                    <td class="delivery-small-value">
+                                        {{ shipment_facility }}
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td class="delivery-small-label">
+                                        Delivery Representative
+                                    </td>
+
+                                    <td class="delivery-small-value">
+                                        {{ delivery_representative }}
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td class="delivery-small-label">
+                                        Invoice given
+                                    </td>
+
+                                    <td class="delivery-small-value">
+                                        Yes
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td class="delivery-small-label">
+                                        Signature
+                                    </td>
+
+                                    <td class="delivery-handwrite-cell">
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+
+                    </div>
+
+
+
+                    <!-- CUSTOMER RECEIPT -->
+
+                    <div class="delivery-signature-side">
+
+
+                        <div class="delivery-signature-heading">
+                            Customer's receipt of goods
+                        </div>
+
+
+                        <table class="delivery-small-table">
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td class="delivery-small-label">
+                                        Receivers Name
+                                    </td>
+
+                                    <td class="delivery-handwrite-cell">
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td class="delivery-small-label">
+                                        ID Number
+                                    </td>
+
+                                    <td class="delivery-handwrite-cell">
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td class="delivery-small-label">
+                                        Phone Number
+                                    </td>
+
+                                    <td class="delivery-handwrite-cell">
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <td class="delivery-small-label">
+                                        Signature
+                                    </td>
+
+                                    <td class="delivery-handwrite-cell">
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+
+                    </div>
+
+
+                </section>
+
+
+
+                <!-- =========================================
+                     NOTE TO RECIPIENT
+                ========================================== -->
+
+                <footer class="delivery-recipient-note">
+
+
+                    <div class="delivery-note-heading">
+                        Note to recipient
+                    </div>
+
+
+                    <div class="delivery-note-box">
+
+
+                        <div class="delivery-note-english">
+
+                            For complaints or customer service inquiries,
+                            please contact +9379 888 0025 - 24 or mail us at
+
+                            <span class="delivery-contact">
+                                Sales@abi-af.com
+                            </span>
+
+                            or
+
+                            <span class="delivery-contact">
+                                Areshad@abi-af.com
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="delivery-note-dari"
+                            dir="rtl"
+                        >
+
+                            برای شکایات و خدمات مشتریان لطفا به شماره های
+                            +9379 888 0025 - 24
+                            تماس شوید و یا با ایمیل
+
+                            <span class="delivery-contact">
+                                Sales@abi-af.com
+                            </span>
+
+                            ،
+
+                            <span class="delivery-contact">
+                                Areshad@abi-af.com
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                </footer>
+
+
+            </section>
+
+
+        {% endfor %}
+
+
+    </main>
+
+
+
+    <script
+        src="{% static 'orders/js/app.js' %}"
+        defer
+    ></script>
+
+
+</body>
+
+</html>

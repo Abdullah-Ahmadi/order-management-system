@@ -1,0 +1,398 @@
+{% extends "orders/base.html" %}
+
+
+{% block title %}
+Purchase Request {{ order.serial_number }} | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+<div class="page-header">
+
+    <div>
+        <h1 class="page-title">
+            Purchase Request
+        </h1>
+
+        <p class="page-subtitle">
+            Order {{ order.serial_number }} —
+            {{ order.distributor.full_name }}
+        </p>
+    </div>
+
+
+    <div class="button-row">
+
+        <a
+            href="{% url 'orders:purchase_request_print' order.id %}"
+            class="button button-primary"
+            target="_blank"
+        >
+            Print Purchase Request
+        </a>
+
+        <a
+            href="{% url 'orders:order_detail' order.id %}"
+            class="button button-secondary"
+        >
+            Back to Order
+        </a>
+
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =====================================================
+     CUSTOMER / ORDER INFORMATION
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Purchase Request Information
+    </h2>
+
+    <div class="detail-grid">
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Customer
+            </span>
+
+            <span class="detail-value">
+                {{ order.distributor.full_name }}
+            </span>
+        </div>
+
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Customer ID
+            </span>
+
+            <span class="detail-value">
+                {{ order.distributor.customer_code }}
+            </span>
+        </div>
+
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Territory
+            </span>
+
+            <span class="detail-value">
+                {{ order.distributor.territory.name }}
+            </span>
+        </div>
+
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Payment Term
+            </span>
+
+            <span class="detail-value">
+                {{ order.distributor.get_payment_status_display }}
+            </span>
+        </div>
+
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Order Date
+            </span>
+
+            <span class="detail-value">
+                {{ order.order_date|date:"d-M-Y" }}
+            </span>
+        </div>
+
+
+        <div class="detail-row">
+            <span class="detail-label">
+                Serial Number
+            </span>
+
+            <span class="detail-value">
+                {{ order.serial_number }}
+            </span>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PRODUCTS
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Products
+    </h2>
+
+    {% if order.items.all %}
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Brand / Product</th>
+                        <th>Pack</th>
+                        <th>Quantity</th>
+                        <th>Price / Case</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for item in order.items.all %}
+
+                        <tr>
+
+                            <td>
+                                {{ item.product.sku }}
+                            </td>
+
+                            <td>
+                                {{ item.product.name }}
+                            </td>
+
+                            <td>
+                                {{ item.product.size }}
+                                —
+                                {{ item.product.units_per_case }}
+                                units
+                            </td>
+
+                            <td>
+                                {{ item.quantity }}
+                            </td>
+
+                            <td>
+                                AFN {{ item.unit_price|floatformat:2 }}
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            No products are available for this order.
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =====================================================
+     DISPATCH / TRANSPORT INFORMATION
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Related Dispatches
+    </h2>
+
+    {% if order.dispatches.all %}
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Dispatch</th>
+                        <th>Driver</th>
+                        <th>Truck</th>
+                        <th>Tonnage</th>
+                        <th>Freight / Ton</th>
+                        <th>Total Freight</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for dispatch in order.dispatches.all %}
+
+                        <tr>
+
+                            <td>
+                                <a
+                                    href="{% url 'orders:dispatch_detail' dispatch.id %}"
+                                >
+                                    {{ dispatch.dispatch_number }}
+                                </a>
+                            </td>
+
+
+                            <td>
+
+                                {% if dispatch.driver %}
+                                    {{ dispatch.driver.full_name }}
+
+                                {% elif dispatch.external_driver_name %}
+                                    {{ dispatch.external_driver_name }}
+
+                                {% else %}
+                                    —
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if dispatch.truck %}
+                                    {{ dispatch.truck.plate_number }}
+
+                                {% elif dispatch.external_truck_plate %}
+                                    {{ dispatch.external_truck_plate }}
+
+                                {% else %}
+                                    —
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+                                {{ dispatch.total_weight_tons|floatformat:2 }}
+                            </td>
+
+
+                            <td>
+                                AFN
+                                {{ dispatch.freight_rate_per_ton|floatformat:2 }}
+                            </td>
+
+
+                            <td>
+                                AFN
+                                {{ dispatch.total_freight|floatformat:2 }}
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            No dispatches are available.
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =====================================================
+     FINANCIAL SUMMARY
+===================================================== -->
+
+<section class="card">
+
+    <h2 class="card-title">
+        Financial Summary
+    </h2>
+
+    <div class="summary-grid">
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Total Cases
+            </span>
+
+            <span class="summary-value">
+                {{ order.total_cases }}
+            </span>
+
+        </div>
+
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Total Tonnage
+            </span>
+
+            <span class="summary-value">
+                {{ purchase_request.total_weight_tons|floatformat:2 }}
+                tons
+            </span>
+
+        </div>
+
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Subtotal
+            </span>
+
+            <span class="summary-value">
+                AFN {{ purchase_request.subtotal|floatformat:2 }}
+            </span>
+
+        </div>
+
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Freight
+            </span>
+
+            <span class="summary-value">
+                AFN {{ purchase_request.total_freight|floatformat:2 }}
+            </span>
+
+        </div>
+
+
+        <div class="summary-item">
+
+            <span class="summary-label">
+                Payable Amount
+            </span>
+
+            <span class="summary-value">
+                AFN {{ purchase_request.payable_amount|floatformat:2 }}
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

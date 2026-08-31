@@ -1,0 +1,633 @@
+{% extends "orders/base.html" %}
+{% load static l10n %}
+
+
+{% block title %}
+{{ page_title }} | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            {{ page_title }}
+        </h1>
+
+        <p class="page-subtitle">
+
+            {% if editing %}
+                Update the order information, products, and quantities.
+            {% else %}
+                Select the customer and build the customer's order.
+            {% endif %}
+
+        </p>
+
+    </div>
+
+
+    <a
+        href="{% url 'orders:order_list' %}"
+        class="button button-secondary"
+    >
+        Back to Orders
+    </a>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<form
+    method="post"
+    id="order-form"
+    data-prevent-double-submit
+>
+    {% csrf_token %}
+
+
+    <!-- =================================================
+         ORDER INFORMATION
+    ================================================== -->
+
+    <section class="card">
+
+        <h2 class="card-title">
+            Order Information
+        </h2>
+
+
+        {% if form.non_field_errors %}
+
+            <div class="message message-error">
+                {{ form.non_field_errors }}
+            </div>
+
+        {% endif %}
+
+
+        <div class="form-grid">
+
+
+            <!-- ORDER NUMBER -->
+
+            <div class="form-group">
+
+                <label
+                    for="{{ form.serial_number.id_for_label }}"
+                >
+                    Order Number
+                </label>
+
+                {{ form.serial_number }}
+
+                {% if form.serial_number.errors %}
+                    {{ form.serial_number.errors }}
+                {% endif %}
+
+                <span class="help-text">
+                    Generated automatically, but it can be changed if necessary.
+                </span>
+
+            </div>
+
+
+            <!-- ORDER DATE -->
+
+            <div class="form-group">
+
+                <label
+                    for="{{ form.order_date.id_for_label }}"
+                >
+                    Order Date
+                </label>
+
+                {{ form.order_date }}
+
+                {% if form.order_date.errors %}
+                    {{ form.order_date.errors }}
+                {% endif %}
+
+            </div>
+
+
+            <!-- TERRITORY -->
+
+            <div class="form-group">
+
+                <label for="id_territory_filter">
+                    Province / Territory
+                </label>
+
+                <select
+                    id="id_territory_filter"
+                    data-order-territory-filter
+                >
+
+                    <option value="">
+                        All Provinces / Territories
+                    </option>
+
+
+                    {% for distributor in form.distributor.field.queryset %}
+
+                        <option
+                            value="{{ distributor.territory_id }}"
+                        >
+                            {{ distributor.territory.name }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <span class="help-text">
+                    Select a province or territory to help find the customer.
+                </span>
+
+            </div>
+
+
+            <!-- CUSTOMER -->
+
+            <div class="form-group">
+
+                <label
+                    for="{{ form.distributor.id_for_label }}"
+                >
+                    Customer
+                </label>
+
+                {{ form.distributor }}
+
+                {% if form.distributor.errors %}
+                    {{ form.distributor.errors }}
+                {% endif %}
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="form-group">
+
+                <label
+                    for="{{ form.status.id_for_label }}"
+                >
+                    Status
+                </label>
+
+                {{ form.status }}
+
+                {% if form.status.errors %}
+                    {{ form.status.errors }}
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =================================================
+         PRODUCTS
+    ================================================== -->
+
+    <section
+        class="card"
+        id="order-products-formset"
+        data-order-formset-prefix="{{ formset.prefix }}"
+    >
+
+        <div class="page-header">
+
+            <div>
+
+                <h2 class="card-title">
+                    Products
+                </h2>
+
+                <p class="page-subtitle">
+                    Add products and quantities. Weight and value update automatically.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="button button-secondary"
+                id="order-add-product"
+            >
+                + Add Product
+            </button>
+
+        </div>
+
+
+        {{ formset.management_form }}
+
+
+        {% if formset.non_form_errors %}
+
+            <div class="message message-error">
+                {{ formset.non_form_errors }}
+            </div>
+
+        {% endif %}
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Case Weight</th>
+                        <th>Line Weight</th>
+                        <th>Unit Price</th>
+                        <th>Line Value</th>
+                        <th>Remove</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="order-product-rows">
+
+                    {% for item_form in formset %}
+
+                        <tr
+                            class="order-product-row"
+                            data-saved-row="{% if item_form.instance.pk %}true{% else %}false{% endif %}"
+                            data-original-product-id="{% if item_form.instance.pk %}{{ item_form.instance.product_id }}{% endif %}"
+                            data-existing-unit-price="{% if item_form.instance.pk %}{{ item_form.instance.unit_price|unlocalize }}{% endif %}"
+                        >
+
+
+                            <!-- PRODUCT -->
+
+                            <td>
+
+                                {{ item_form.id }}
+
+                                {{ item_form.product }}
+
+                                {% if item_form.product.errors %}
+                                    {{ item_form.product.errors }}
+                                {% endif %}
+
+                                {% if item_form.non_field_errors %}
+                                    {{ item_form.non_field_errors }}
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- QUANTITY -->
+
+                            <td>
+
+                                {{ item_form.quantity }}
+
+                                {% if item_form.quantity.errors %}
+                                    {{ item_form.quantity.errors }}
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- CASE WEIGHT -->
+
+                            <td
+                                data-order-case-weight
+                                class="order-weight-column"
+                            >
+                                —
+                            </td>
+
+
+                            <!-- LINE WEIGHT -->
+
+                            <td
+                                data-order-line-weight
+                                class="order-weight-column"
+                            >
+                                —
+                            </td>
+
+
+                            <!-- UNIT PRICE -->
+
+                            <td
+                                data-order-unit-price
+                                class="order-invoice-column"
+                            >
+                                —
+                            </td>
+
+
+                            <!-- LINE VALUE -->
+
+                            <td
+                                data-order-line-total
+                                class="order-invoice-column"
+                            >
+                                —
+                            </td>
+
+
+                            <!-- DELETE -->
+
+                            <td>
+
+                                <div hidden>
+                                    {{ item_form.DELETE }}
+                                </div>
+
+
+                                <button
+                                    type="button"
+                                    class="button button-secondary order-product-remove"
+                                >
+                                    Remove
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+
+        <!-- =================================================
+             EMPTY FORM
+        ================================================== -->
+
+        <template id="order-product-empty-form">
+
+            <tr
+                class="order-product-row"
+                data-saved-row="false"
+                data-original-product-id=""
+                data-existing-unit-price=""
+            >
+
+                <td>
+
+                    {{ formset.empty_form.id }}
+
+                    {{ formset.empty_form.product }}
+
+                </td>
+
+
+                <td>
+                    {{ formset.empty_form.quantity }}
+                </td>
+
+
+                <td
+                    data-order-case-weight
+                    class="order-weight-column"
+                >
+                    —
+                </td>
+
+
+                <td
+                    data-order-line-weight
+                    class="order-weight-column"
+                >
+                    —
+                </td>
+
+
+                <td
+                    data-order-unit-price
+                    class="order-invoice-column"
+                >
+                    —
+                </td>
+
+
+                <td
+                    data-order-line-total
+                    class="order-invoice-column"
+                >
+                    —
+                </td>
+
+
+                <td>
+
+                    <div hidden>
+                        {{ formset.empty_form.DELETE }}
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="button button-secondary order-product-remove"
+                    >
+                        Remove
+                    </button>
+
+                </td>
+
+            </tr>
+
+        </template>
+
+
+
+        <!-- =================================================
+             LIVE ORDER SUMMARY
+        ================================================== -->
+
+        <div style="margin-top: 24px;">
+
+            <h3 class="card-title">
+                Live Order Summary
+            </h3>
+
+
+            <p class="page-subtitle">
+                Totals update immediately as you adjust the order.
+            </p>
+
+
+            <div
+                class="summary-grid"
+                style="margin-top: 16px;"
+            >
+
+
+                <!-- CASES -->
+
+                <div class="summary-item">
+
+                    <span class="summary-label">
+                        Total Cases
+                    </span>
+
+                    <span
+                        class="summary-value"
+                        id="order-live-total-cases"
+                    >
+                        0
+                    </span>
+
+                </div>
+
+
+                <!-- WEIGHT -->
+
+                <div class="summary-item">
+
+                    <span class="summary-label">
+                        Total Weight
+                    </span>
+
+                    <span
+                        class="summary-value"
+                        id="order-live-total-weight"
+                    >
+                        0.000 tons
+                    </span>
+
+                </div>
+
+
+                <!-- PRICE TYPE -->
+
+                <div class="summary-item">
+
+                    <span class="summary-label">
+                        Customer Price Type
+                    </span>
+
+                    <span
+                        class="summary-value"
+                        id="order-live-price-type"
+                    >
+                        Select customer
+                    </span>
+
+                </div>
+
+
+                <!-- INVOICE -->
+
+                <div class="summary-item">
+
+                    <span class="summary-label">
+                        Estimated Invoice Value
+                    </span>
+
+                    <span
+                        class="summary-value"
+                        id="order-live-invoice"
+                    >
+                        Select customer
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <p
+                class="help-text"
+                style="margin-top: 12px;"
+            >
+                The estimated invoice uses the selected customer's wholesale
+                or retail prices. Freight is calculated from actual dispatches.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =================================================
+         ACTIONS
+    ================================================== -->
+
+    <section class="card">
+
+        <div class="button-row">
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+
+                {% if editing %}
+                    Save Changes
+                {% else %}
+                    Create Order
+                {% endif %}
+
+            </button>
+
+
+            {% if editing and order %}
+
+                <a
+                    href="{% url 'orders:order_detail' order.id %}"
+                    class="button button-secondary"
+                >
+                    Cancel
+                </a>
+
+            {% else %}
+
+                <a
+                    href="{% url 'orders:order_list' %}"
+                    class="button button-secondary"
+                >
+                    Cancel
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+</form>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'orders/js/order_form.js' %}"
+    defer
+></script>
+
+{% endblock %}

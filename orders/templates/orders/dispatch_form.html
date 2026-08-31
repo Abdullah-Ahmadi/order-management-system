@@ -1,0 +1,782 @@
+{% extends "orders/base.html" %}
+{% load static %}
+
+
+{% block title %}
+{{ page_title }} | Order Management System
+{% endblock %}
+
+
+{% block page_header %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1 class="page-title">
+            {{ page_title }}
+        </h1>
+
+        <p class="page-subtitle">
+            Prepare the products and transport information for this dispatch.
+        </p>
+
+    </div>
+
+
+    <div>
+
+        <a
+            href="{% url 'orders:order_detail' order.id %}"
+            class="button button-secondary"
+        >
+            Back to Order
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block content %}
+
+<form
+    method="post"
+    data-prevent-double-submit
+    id="dispatch-form"
+>
+    {% csrf_token %}
+
+
+    <!-- =================================================
+         SOURCE ORDER
+
+         The source Order is displayed once.
+         The user does not need to select the Order again
+         because it is already determined by the URL.
+    ================================================== -->
+
+    <section class="card">
+
+        <h2 class="card-title">
+            Source Order
+        </h2>
+
+
+        <div class="summary-grid">
+
+
+            <!-- ORDER NUMBER -->
+
+            <div class="summary-item">
+
+                <span class="summary-label">
+                    Order
+                </span>
+
+                <span class="summary-value">
+                    {{ order.serial_number }}
+                </span>
+
+            </div>
+
+
+            <!-- CUSTOMER -->
+
+            <div class="summary-item">
+
+                <span class="summary-label">
+                    Customer
+                </span>
+
+                <span class="summary-value">
+                    {{ order.distributor.full_name }}
+                </span>
+
+            </div>
+
+
+            <!-- TERRITORY -->
+
+            <div class="summary-item">
+
+                <span class="summary-label">
+                    Province / Territory
+                </span>
+
+                <span class="summary-value">
+                    {{ order.distributor.territory.name }}
+                </span>
+
+            </div>
+
+
+            <!-- ORDERED CASES -->
+
+            <div class="summary-item">
+
+                <span class="summary-label">
+                    Ordered Cases
+                </span>
+
+                <span class="summary-value">
+                    {{ order.total_cases }}
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =================================================
+         DISPATCH INFORMATION
+    ================================================== -->
+
+    <section class="card">
+
+        <h2 class="card-title">
+            Dispatch Information
+        </h2>
+
+
+        {% if form.non_field_errors %}
+
+            <div class="message message-error">
+                {{ form.non_field_errors }}
+            </div>
+
+        {% endif %}
+
+
+        {% if form.order.errors %}
+
+            <div class="message message-error">
+                {{ form.order.errors }}
+            </div>
+
+        {% endif %}
+
+
+        <div class="form-grid">
+
+
+            <!-- DISPATCH NUMBER -->
+
+            <div class="form-group">
+
+                <label
+                    for="{{ form.dispatch_number.id_for_label }}"
+                >
+                    Dispatch Number
+                </label>
+
+
+                {{ form.dispatch_number }}
+
+
+                {% if form.dispatch_number.errors %}
+                    {{ form.dispatch_number.errors }}
+                {% endif %}
+
+
+            </div>
+
+
+            <!-- DISPATCH DATE -->
+
+            <div class="form-group">
+
+                <label
+                    for="{{ form.dispatch_date.id_for_label }}"
+                >
+                    Dispatch Date
+                </label>
+
+
+                {{ form.dispatch_date }}
+
+
+                {% if form.dispatch_date.errors %}
+                    {{ form.dispatch_date.errors }}
+                {% endif %}
+
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =================================================
+         TRANSPORT INFORMATION
+    ================================================== -->
+
+    <section class="card">
+
+        <h2 class="card-title">
+            Transport Information
+        </h2>
+
+
+
+        <div class="form-grid">
+
+
+            <!-- COMPANY DRIVER -->
+
+            <div class="form-group">
+
+                <label
+                    for="{{ form.driver.id_for_label }}"
+                >
+                    Company Driver
+                </label>
+
+
+                {{ form.driver }}
+
+
+                {% if form.driver.errors %}
+                    {{ form.driver.errors }}
+                {% endif %}
+
+            </div>
+
+
+            <!-- EXTERNAL DRIVER -->
+
+            <div class="form-group">
+
+                <label
+                    for="{{ form.external_driver_name.id_for_label }}"
+                >
+                    External Driver
+                </label>
+
+
+                {{ form.external_driver_name }}
+
+
+                {% if form.external_driver_name.errors %}
+                    {{ form.external_driver_name.errors }}
+                {% endif %}
+
+
+
+            </div>
+
+
+            <!-- COMPANY TRUCK -->
+
+            <div class="form-group">
+
+                <label
+                    for="{{ form.truck.id_for_label }}"
+                >
+                    Company Truck
+                </label>
+
+
+                {{ form.truck }}
+
+
+                {% if form.truck.errors %}
+                    {{ form.truck.errors }}
+                {% endif %}
+
+            </div>
+
+
+            <!-- EXTERNAL TRUCK -->
+
+            <div class="form-group">
+
+                <label
+                    for="{{ form.external_truck_plate.id_for_label }}"
+                >
+                    External Truck Plate
+                </label>
+
+
+                {{ form.external_truck_plate }}
+
+
+                {% if form.external_truck_plate.errors %}
+                    {{ form.external_truck_plate.errors }}
+                {% endif %}
+
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =================================================
+         PRODUCTS TO DISPATCH
+    ================================================== -->
+
+    <section
+        class="card"
+        id="dispatch-products-formset"
+        data-dispatch-formset-prefix="{{ formset.prefix }}"
+    >
+
+        <div class="page-header">
+
+            <div>
+
+                <h2 class="card-title">
+                    Products to Dispatch
+                </h2>
+
+
+                <p class="page-subtitle">
+
+                    {% if editing %}
+
+                        Adjust the quantities included in this dispatch.
+
+                    {% else %}
+
+                        Remaining order quantities are loaded automatically.
+                        Reduce quantities or remove products when creating a partial dispatch.
+
+                    {% endif %}
+
+                </p>
+
+            </div>
+
+
+            <div>
+
+                <button
+                    type="button"
+                    class="button button-secondary"
+                    id="dispatch-add-product"
+                >
+                    + Add Product
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             DJANGO FORMSET MANAGEMENT DATA
+        ================================================== -->
+
+        {{ formset.management_form }}
+
+
+        {% if formset.non_form_errors %}
+
+            <div class="message message-error">
+                {{ formset.non_form_errors }}
+            </div>
+
+        {% endif %}
+
+
+
+        <!-- =================================================
+             PRODUCT FORMSET STATUS MESSAGE
+        ================================================== -->
+
+        <div
+            id="dispatch-product-message"
+            role="status"
+            aria-live="polite"
+            class="help-text"
+        ></div>
+
+
+
+        <!-- =================================================
+             ORDER ITEM QUANTITY DATA
+
+             This is hidden HTML data used by
+             dispatch_form.js.
+
+             JavaScript uses it to display:
+             - Ordered quantity
+             - Previously dispatched quantity
+             - Available quantity
+        ================================================== -->
+
+        <div
+            id="dispatch-order-item-data"
+            hidden
+        >
+
+            {% for status in order_item_statuses %}
+
+                <span
+                    data-order-item-id="{{ status.order_item.pk }}"
+                    data-ordered="{{ status.ordered }}"
+                    data-previously-dispatched="{{ status.previously_dispatched }}"
+                    data-available="{{ status.available }}"
+                ></span>
+
+            {% endfor %}
+
+        </div>
+
+
+
+        <!-- =================================================
+             PRODUCT TABLE
+        ================================================== -->
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Product
+                        </th>
+
+                        <th>
+                            Ordered
+                        </th>
+
+                        <th>
+                            Previously Dispatched
+                        </th>
+
+                        <th>
+                            Available
+                        </th>
+
+                        <th>
+                            Dispatch Now
+                        </th>
+
+                        <th>
+                            Remove
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="dispatch-product-rows">
+
+                    {% for item_form in formset %}
+
+                        <tr class="dispatch-product-row">
+
+
+                            <!-- =================================
+                                 PRODUCT
+                            ================================== -->
+
+                            <td>
+
+                                {{ item_form.id }}
+
+                                {{ item_form.order_item }}
+
+
+                                {% if item_form.order_item.errors %}
+
+                                    {{ item_form.order_item.errors }}
+
+                                {% endif %}
+
+
+                                {% if item_form.non_field_errors %}
+
+                                    {{ item_form.non_field_errors }}
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- =================================
+                                 ORDERED
+                            ================================== -->
+
+                            <td data-dispatch-ordered>
+
+                                {% if item_form.dispatch_meta %}
+
+                                    {{ item_form.dispatch_meta.ordered }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- =================================
+                                 PREVIOUSLY DISPATCHED
+                            ================================== -->
+
+                            <td data-dispatch-previous>
+
+                                {% if item_form.dispatch_meta %}
+
+                                    {{ item_form.dispatch_meta.previously_dispatched }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- =================================
+                                 AVAILABLE
+                            ================================== -->
+
+                            <td data-dispatch-available>
+
+                                {% if item_form.dispatch_meta %}
+
+                                    {{ item_form.dispatch_meta.available }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- =================================
+                                 DISPATCH NOW
+                            ================================== -->
+
+                            <td>
+
+                                {{ item_form.quantity }}
+
+
+                                {% if item_form.quantity.errors %}
+
+                                    {{ item_form.quantity.errors }}
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- =================================
+                                 REMOVE
+                            ================================== -->
+
+                            <td>
+
+                                <div hidden>
+
+                                    {{ item_form.DELETE }}
+
+                                </div>
+
+
+                                <button
+                                    type="button"
+                                    class="button button-secondary dispatch-product-remove"
+                                >
+                                    Remove
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+
+        <!-- =================================================
+             EMPTY PRODUCT FORM
+
+             Used by dispatch_form.js whenever another
+             product row needs to be created.
+
+             This remains HTML only. The behavior itself
+             stays inside dispatch_form.js.
+        ================================================== -->
+
+        <template id="dispatch-product-empty-form">
+
+            <tr class="dispatch-product-row">
+
+
+                <!-- PRODUCT -->
+
+                <td>
+
+                    {{ formset.empty_form.id }}
+
+                    {{ formset.empty_form.order_item }}
+
+                </td>
+
+
+                <!-- ORDERED -->
+
+                <td data-dispatch-ordered>
+                    —
+                </td>
+
+
+                <!-- PREVIOUSLY DISPATCHED -->
+
+                <td data-dispatch-previous>
+                    —
+                </td>
+
+
+                <!-- AVAILABLE -->
+
+                <td data-dispatch-available>
+                    —
+                </td>
+
+
+                <!-- DISPATCH NOW -->
+
+                <td>
+
+                    {{ formset.empty_form.quantity }}
+
+                </td>
+
+
+                <!-- REMOVE -->
+
+                <td>
+
+                    <div hidden>
+
+                        {{ formset.empty_form.DELETE }}
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="button button-secondary dispatch-product-remove"
+                    >
+                        Remove
+                    </button>
+
+                </td>
+
+            </tr>
+
+        </template>
+
+    </section>
+
+
+
+    <!-- =================================================
+         FORM ACTIONS
+    ================================================== -->
+
+    <section class="card">
+
+        <div class="button-row">
+
+
+            <!-- SAVE -->
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+
+                {% if editing %}
+
+                    Save Changes
+
+                {% else %}
+
+                    Create Dispatch
+
+                {% endif %}
+
+            </button>
+
+
+            <!-- CANCEL -->
+
+            {% if editing and dispatch %}
+
+                <a
+                    href="{% url 'orders:dispatch_detail' dispatch.id %}"
+                    class="button button-secondary"
+                >
+                    Cancel
+                </a>
+
+            {% else %}
+
+                <a
+                    href="{% url 'orders:order_detail' order.id %}"
+                    class="button button-secondary"
+                >
+                    Cancel
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+</form>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{% static 'orders/js/dispatch_form.js' %}"
+    defer
+></script>
+
+{% endblock %}
