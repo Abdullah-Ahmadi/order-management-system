@@ -1,391 +1,168 @@
 # Order Management System (OMS)
 
-<p align="center">
-  <strong>A practical Django-based order and dispatch management system</strong><br>
-  Built as a CS50W final project and designed for real-world business use.
-</p>
+OMS is a Django and JavaScript application developed as my CS50W final project for the operational needs of **Afghanistan Beverage Industries Ltd. (ABI), the PepsiCo franchisee where I work as a Sales Clerk**. Its design reflects the practical work of recording customer orders, coordinating dispatches, calculating freight, and preparing distribution documents.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Django-5.2-0C4B33?logo=django&logoColor=white" alt="Django 5.2">
-  <img src="https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white" alt="Python 3.11">
-  <img src="https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?logo=javascript&logoColor=000" alt="JavaScript">
-  <img src="https://img.shields.io/badge/PostgreSQL-Neon-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/Deployed%20on-Render-46E3B7?logo=render&logoColor=000" alt="Render">
-  <img src="https://img.shields.io/badge/CS50W-Final%20Project-A51C30" alt="CS50W Final Project">
-</p>
+The application brings orders, transport information, customer records, and reporting into one workflow. It is intended for internal company users, with authenticated access and administrator-controlled user management.
 
----
+## Distinctiveness and Complexity
 
-## ✨ Overview
+OMS addresses beverage-distribution operations rather than public online shopping. Although it contains products, prices, and orders, its central workflow is the internal coordination of customer orders and their fulfillment through one or more dispatches. It does not provide auctions, bidding, watchlists, or a public customer checkout. Its focus on transport, freight, and operational paperwork distinguishes it from the CS50W Commerce project and the Pizza ordering concept.
 
-The **Order Management System (OMS)** is a web application built with Django to manage beverage distribution workflows in one centralized place.
+The application also differs from Network, Mail, Wiki, and Search. It does not organize social posts, messages, encyclopedia entries, or search-engine queries. Instead, it connects business records across an order's operational lifecycle. My work at ABI informed the choice of entities, calculations, and printable documents, giving the project a specific real-company purpose.
 
-It replaces a largely spreadsheet-based process with a structured system for managing:
+The data model contains eleven related entities: Territory, Distributor, Product, Driver, Truck, Order, OrderItem, Dispatch, DispatchItem, PurchaseRequest, and DeliveryNote. Orders contain multiple products and can be fulfilled across several dispatches. Validation checks that dispatch items belong to the correct order and do not exceed its remaining quantities. Database constraints prevent duplicate line items and enforce one active distributor per territory. Saving related order or dispatch records uses database transactions.
 
-- orders
-- dispatches
-- purchase requests
-- delivery notes
-- dispatch summaries
-- customers and territories
-- products, drivers, and trucks
-- user access
+Business calculations add complexity beyond basic record creation and editing. Order items store the applicable wholesale or retail price when created. Dispatch quantities and case weights determine tonnage, which selects a territory-specific freight rate. Freight is zero when both the driver and truck belong to the company. Purchase requests combine order values with freight across related dispatches, while delivery notes record delivery information separately.
 
-The project is intentionally designed to stay **simple, practical, maintainable, and business-focused** while still supporting real operational requirements.
+The frontend coordinates dynamic product rows, customer filtering by territory, and live order totals with Django forms and formsets. The system also produces A4 operational documents, daily dispatch summaries, Excel downloads, and PNG exports. These connected workflows, validations, calculations, and output formats provide the project's main complexity; framework choice and deployment alone are not the justification.
 
----
+## Features and Business Rules
 
-## 🚀 Main Features
+- Authentication, password resets through administrator tools, and user activation controls.
+- Order creation, editing, searching, automatic serial numbers, and draft/confirmed/cancelled statuses.
+- Multiple dispatches per order, company or external transport, and remaining-quantity validation.
+- Freight bands: below 17 tons, 17 to below 26 tons, and 26 tons or more.
+- Loading dispatches with four printed copies, purchase requests with selectable copy counts, and optional delivery notes with two copies.
+- Daily dispatch summaries with customer, territory, truck, tonnage, and product totals.
+- Management of products, distributors, territories, drivers, and trucks.
 
-### 🔐 Authentication and User Management
-- Secure Django authentication
-- Login and logout
-- Administrator-only user management
-- Create, edit, activate, and deactivate users
-- Reset user passwords
-- Protection against deactivating the current or last active administrator
+## File Guide
 
-### 🧾 Order Management
-- Create, edit, view, and search orders
-- Automatic order serial numbers
-- Editable order date and serial number
-- Customer selection by territory
-- Dynamic product rows
-- Live calculation of:
-  - total cases
-  - total weight
-  - applicable customer price type
-  - estimated invoice value
-- Wholesale and retail pricing
-- Order status management
+Paths below are relative to the repository root. Files with parallel roles are grouped and explicitly named.
 
-### 🚚 Dispatch Management
-- Create one or more dispatches from an order
-- Independent dispatch date
-- Company or external driver/truck information
-- Remaining-order-quantity validation
-- Automatic dispatch weight calculation
-- Automatic freight category determination
-- Automatic freight calculation based on tonnage and territory
-- Zero freight when both truck and driver belong to the company
-- Search and filter dispatches
+### Root and Django Configuration
 
-### 🖨️ Dispatch Printing
-- Printable loading dispatch designed to match the existing business document
-- Four copies on one A4 page:
-  - Sales Copy
-  - Warehouse Copy
-  - Security Copy
-  - Finance Copy
-- Fixed product matrix
-- Driver, truck, customer, territory, dispatch number, date, and weight
-- Company branding and print time
-
-### 💰 Purchase Requests
-- Purchase Request generated from order/dispatch information
-- Fixed product and pricing table
-- Payment term, territory, dispatch, vehicle, driver, and tonnage information
-- Subtotal
-- Freight
-- Payable amount
-- Amount in words
-- Rounded monetary values for printing
-- User-selectable print copy count
-- Default print count of two copies
-
-### 📦 Delivery Notes
-- Delivery Notes are optional and created only when required
-- Intended mainly for deliveries made using company transport
-- Product quantities are taken from the relevant dispatch
-- Sender information includes driver and truck
-- Recipient name, ID, phone number, and signature remain blank on the printed document for handwritten completion at delivery
-- Returned recipient information can later be recorded in the system
-- Two identical copies are prepared for printing
-
-### 📊 Dispatch Summary
-- Daily Dispatch Summary by dispatch date
-- Aggregated customer/territory dispatch information
-- Truck count
-- Tonnage
-- Product-category totals
-- Overall totals
-- Printable view
-- Excel export
-- PNG export
-
-### 🛠️ Master Data Management
-The system provides management pages for:
-- Products
-- Customers / Distributors
-- Territories
-- Drivers
-- Trucks
-- Users
-
-Management pages include search/filter functionality and activation/deactivation where appropriate.
-
-### 📱 Responsive Interface
-- Responsive layout for desktop, tablet, and mobile
-- Desktop navigation supports hover
-- Touch devices use tap-to-open navigation
-- Tables remain horizontally scrollable where necessary
-- Forms collapse into mobile-friendly single-column layouts
-
----
-
-## 🧠 Business Rules
-
-The OMS implements several workflow rules directly in the application:
-
-- Only one active distributor may exist for a territory.
-- Product case weights are used to calculate dispatch tonnage.
-- Freight category is determined automatically:
-  - **Low:** below 17 tons
-  - **Medium:** 17 to below 26 tons
-  - **High:** 26 tons and above
-- Freight rates are configured per territory.
-- Company truck + company driver results in zero freight.
-- A dispatch cannot contain more cases than remain on the order.
-- One order may have multiple dispatches or trips.
-- Purchase Request totals can aggregate multiple dispatches belonging to the same order.
-- Delivery Notes are created only when needed.
-
----
-
-## 🧰 Technology Stack
-
-| Layer | Technology |
+| File | Contents |
 | --- | --- |
-| Backend | Python, Django |
-| Frontend | HTML, CSS, JavaScript |
-| Local Database | SQLite |
-| Deployed Database | PostgreSQL |
-| Spreadsheet Export | openpyxl |
-| Production Server | Gunicorn |
-| Static Files | WhiteNoise |
-| Deployment | Render |
-| Hosted PostgreSQL | Neon |
-| Version Control | Git / GitHub |
+| `README.md` | Project explanation, setup, file guide, and limitations. |
+| `requirements.txt` | Python dependencies. |
+| `.gitignore` | Exclusions for local databases, secrets, caches, and generated files. |
+| `manage.py` | Django command-line entry point. |
+| `oms/__init__.py`, `orders/__init__.py` | Python package markers. |
+| `oms/settings.py` | Applications, authentication, databases, static storage, timezone, and environment configuration. |
+| `oms/urls.py` | Root routing, authentication routes, and admin integration. |
+| `oms/asgi.py`, `oms/wsgi.py` | ASGI and WSGI server entry points, respectively. |
 
----
+### Application Python Files
 
-## 📁 Project Structure
+| File | Contents |
+| --- | --- |
+| `orders/apps.py` | Django application configuration. |
+| `orders/models.py` | Eleven business models, relationships, constraints, and calculated properties. |
+| `orders/forms.py` | User and business forms, selection widgets, formsets, and validation. |
+| `orders/views.py` | Page handlers, permissions, workflow validation, document preparation, summaries, and Excel export. |
+| `orders/urls.py` | Named application routes. |
+| `orders/admin.py` | Django admin registrations and management configuration. |
+| `orders/tests.py` | Tests for the management page, product creation, and product activation. |
 
-```text
-oms/
-├── manage.py
-├── requirements.txt
-├── oms/
-│   ├── settings.py
-│   ├── urls.py
-│   ├── wsgi.py
-│   └── asgi.py
-└── orders/
-    ├── migrations/
-    ├── static/
-    │   └── orders/
-    │       ├── css/
-    │       ├── js/
-    │       └── logo/
-    ├── templates/
-    │   ├── orders/
-    │   └── registration/
-    ├── admin.py
-    ├── forms.py
-    ├── models.py
-    ├── tests.py
-    ├── urls.py
-    └── views.py
-```
+### Database Migrations
 
----
+All files below are in `orders/migrations/`.
 
-## ⚙️ Local Setup
+| File | Contents |
+| --- | --- |
+| `__init__.py` | Migration package marker. |
+| `0001_initial.py` | Initial Territory model. |
+| `0002_product_territory_high_freight_rate_and_more.py` | Products, distributors, and territory freight rates. |
+| `0003_driver_truck.py` | Driver and Truck models. |
+| `0004_remove_truck_truck_code.py` | Removal of the truck-code field. |
+| `0005_order.py` | Order model. |
+| `0006_deliverynote_dispatch_dispatchitem_orderitem_and_more.py` | Operational document and line-item models, relationships, package type, and constraints. |
+| `0007_alter_product_package_type.py` | Product package-type choices. |
+| `0008_dispatch_dispatch_date.py` | Dispatch-date field. |
+| `0009_alter_dispatch_dispatch_date.py` | Dispatch-date default adjustment. |
 
-### 1. Clone the repository
+### Templates
+
+Except the login template, these files are in `orders/templates/orders/`.
+
+| File(s) | Contents |
+| --- | --- |
+| `base.html` | Shared layout, navigation, messages, and assets. |
+| `dashboard.html` | Operational overview. |
+| `help.html` | In-application workflow guidance. |
+| `management_home.html` | Links to management pages. |
+| `order_list.html`, `order_detail.html`, `order_form.html` | Order browsing, details, and active create/edit form, respectively. |
+| `order_create.html` | Earlier standalone creation template; the current creation view uses `order_form.html`. |
+| `order_print.html` | Printable order. |
+| `dispatch_list.html`, `dispatch_detail.html`, `dispatch_form.html` | Dispatch browsing, details, and create/edit form, respectively. |
+| `dispatch_print.html` | Four-copy loading dispatch. |
+| `dispatch_summary.html` | Daily summary and export controls. |
+| `purchase_request_detail.html`, `purchase_request_print.html` | Purchase-request details and printable copies, respectively. |
+| `delivery_note_detail.html`, `delivery_note_form.html`, `delivery_note_print.html` | Delivery details, recipient-data entry, and printable copies, respectively. |
+| `product_list.html`, `product_form.html` | Product listing and editing. |
+| `distributor_list.html`, `distributor_form.html` | Distributor listing and editing. |
+| `territory_list.html`, `territory_form.html` | Territory listing and freight-rate editing. |
+| `driver_list.html`, `driver_form.html` | Driver listing and editing. |
+| `truck_list.html`, `truck_form.html` | Truck listing and editing. |
+| `user_list.html`, `user_form.html`, `user_password_form.html` | User listing, account editing, and password resets, respectively. |
+| `orders/templates/registration/login.html` | Login form. |
+
+### Static Assets
+
+These paths are relative to `orders/static/orders/`.
+
+| File(s) | Contents |
+| --- | --- |
+| `css/styles.css` | Shared styling, forms, tables, and mobile layouts. |
+| `css/dashboard.css` | Dashboard styling and responsive grids. |
+| `css/dispatch_print.css`, `css/purchase_request_print.css`, `css/delivery_note_print.css` | Corresponding A4 document layouts. |
+| `js/app.js` | Navigation, print actions, confirmations, messages, and submission protection. |
+| `js/order_form.js` | Dynamic product rows, territory/customer filtering, and live totals. |
+| `js/dispatch_form.js` | Transport-field behavior and dispatch product rows. |
+| `js/dispatch_list.js` | Dispatch-list interactions and filtering. |
+| `js/dispatch_summary.js` | Summary interactions and canvas-based PNG export. |
+| `js/purchase_request_print.js` | Purchase-request copy-count and printing behavior. |
+| `js/product_list.js`, `js/distributor_list.js`, `js/territory_list.js`, `js/driver_list.js`, `js/truck_list.js`, `js/user_list.js` | Corresponding management-list interactions and filtering. |
+| `logo/abi_logo.png` | Company branding used in documents. |
+
+## How to Run
+
+Use Python 3.11 or a compatible newer version.
 
 ```bash
-git clone <repository-url>
-cd oms
+git clone https://github.com/Abdullah-Ahmadi/order-management-system.git
+cd order-management-system
+python -m venv .venv
 ```
 
-### 2. Create a virtual environment
-
-**Windows**
+Activate the environment:
 
 ```bash
-python -m venv venv
-venv\Scripts\activate
+# Windows Command Prompt
+.venv\Scripts\activate
+
+# macOS / Linux
+source .venv/bin/activate
 ```
 
-**macOS / Linux**
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Install dependencies
+Install and initialize:
 
 ```bash
 python -m pip install -r requirements.txt
-```
-
-### 4. Apply migrations
-
-```bash
 python manage.py migrate
-```
-
-### 5. Create an administrator
-
-```bash
 python manage.py createsuperuser
-```
-
-### 6. Run the development server
-
-```bash
 python manage.py runserver
 ```
 
-Open:
+Open http://127.0.0.1:8000/ and sign in. Without `DATABASE_URL`, the application uses SQLite. Local development defaults to `DEBUG=True`.
 
-```text
-http://127.0.0.1:8000/
-```
+For first use, create territories and freight rates, then distributors and products with prices and case weights. Add company drivers and trucks when applicable. Create an order, dispatch some or all of its quantities, and inspect the resulting documents and daily summary. Use fictional records for evaluation rather than confidential company data.
 
-When `DATABASE_URL` is not configured, the project automatically uses local SQLite.
-
----
-
-## 🔑 Environment Variables
-
-The deployed application reads configuration from environment variables.
-
-| Variable | Purpose |
-| --- | --- |
-| `SECRET_KEY` | Django production secret key |
-| `DEBUG` | Set to `False` in production |
-| `DATABASE_URL` | PostgreSQL connection string |
-| `RENDER_EXTERNAL_HOSTNAME` | Supplied automatically by Render |
-| `PYTHON_VERSION` | Python runtime version used by Render |
-
-> ⚠️ Never commit production secrets, database credentials, `.env` files, or `db.sqlite3` to a public repository.
-
----
-
-## ☁️ Deployment
-
-Current deployment architecture:
-
-```text
-GitHub
-   ↓
-Render Web Service
-   ↓
-Django + Gunicorn + WhiteNoise
-   ↓
-Neon PostgreSQL
-```
-
-Render automatically redeploys the application when changes are pushed to the configured GitHub branch.
-
-Typical update workflow:
+## Checks and Configuration
 
 ```bash
 python manage.py check
-git add .
-git commit -m "Describe the change"
-git push
+python manage.py collectstatic --noinput
+python manage.py test
 ```
 
-The application is redeployed while PostgreSQL data remains persistent.
+Static collection is included because the configured manifest storage requires collected assets when tests render pages with debugging disabled. The existing three tests cover management/product behavior, not the full operational workflow.
 
----
+Production configuration uses `SECRET_KEY`, `DEBUG=False`, `DATABASE_URL`, and, on Render, `RENDER_EXTERNAL_HOSTNAME`. PostgreSQL support uses `dj-database-url` and `psycopg2-binary`; Gunicorn serves the application and WhiteNoise serves collected static assets. Keep secrets outside version control. `PYTHON_VERSION` is a hosting runtime setting rather than an application setting.
 
-## 🖨️ Printing
+## Additional Information and Limitations
 
-The following documents are formatted for A4 printing:
+The main interface includes mobile breakpoints, touch navigation, and scrollable tables. Print previews retain fixed A4 dimensions and still require mobile-usability verification; responsive CSS alone does not establish that every screen works on every device.
 
-- Loading Dispatch
-- Purchase Request
-- Delivery Note
-- Dispatch Summary
-
-Printing uses the browser's normal print system, so the document is sent to a printer available to the computer or device currently using the OMS.
-
----
-
-## 🎯 Design Goals
-
-The project prioritizes:
-
-- simple and maintainable architecture
-- practical business workflows
-- data integrity
-- clear separation between backend, templates, CSS, and JavaScript
-- responsive usability
-- reusable master data
-- printable operational documents
-- straightforward deployment and future maintenance
-
----
-
-## 🛣️ Future Improvements
-
-Possible future improvements include:
-
-- expanded automated test coverage
-- stronger concurrency controls for critical serial/dispatch operations
-- more granular user roles and permissions
-- audit logging
-- database backup/restore tooling
-- additional reporting and analytics
-- improved production monitoring
-- further validation based on real-world user feedback
-
----
-
-## 🔒 Security Notes
-
-This repository should never contain:
-
-```text
-db.sqlite3
-.env
-production SECRET_KEY values
-PostgreSQL connection strings
-database passwords
-private API keys
-```
-
-For production use:
-
-- keep `DEBUG=False`
-- use individual user accounts
-- use strong passwords
-- keep secrets in environment variables
-- avoid committing real operational data
-
----
-
-## 🎓 CS50W
-
-This project was created as a final project for **CS50's Web Programming with Python and JavaScript (CS50W)**.
-
-It goes beyond a demonstration-only application by modeling a real operational workflow with multiple related business entities, dynamic calculations, printable documents, authentication, responsive behavior, PostgreSQL deployment, and concurrent multi-user access.
-
----
-
-## 📄 License
-
-No open-source license is currently granted.
-
-If this repository is made public, the source code is visible, but it should not be assumed to be available for commercial reuse unless a license is explicitly added.
-
----
-
-<p align="center">
-  <strong>Built with Django • Designed for real operational use • CS50W Final Project</strong>
-</p>
+Stronger concurrency controls, broader automated tests, granular operational permissions, and audit logging remain future improvements. The project documents a real company's workflow, but this README does not assert company endorsement or certify production readiness. No open-source license is currently granted.
