@@ -153,19 +153,6 @@ body {
 }
 
 
-.abi-logo {
-    position: absolute;
-
-    top: 1mm;
-    left: 0;
-
-    width: 22mm;
-    height: 22mm;
-
-    object-fit: contain;
-}
-
-
 .header-center {
     width: 100%;
 
@@ -613,12 +600,6 @@ body {
 
 
     .shaded-row td {
-        print-color-adjust: exact;
-        -webkit-print-color-adjust: exact;
-    }
-
-
-    .abi-logo {
         print-color-adjust: exact;
         -webkit-print-color-adjust: exact;
     }

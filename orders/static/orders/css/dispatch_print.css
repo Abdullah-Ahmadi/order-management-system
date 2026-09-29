@@ -219,30 +219,7 @@ body {
 
 
 
-/* =========================================================
-   LOGO
-========================================================= */
 
-.dispatch-logo {
-    display: flex;
-
-    align-items: flex-start;
-    justify-content: center;
-    
-    /* border: solid 1px black; */
-
-    padding-top: 0.5mm;
-}
-
-
-.dispatch-logo img {
-    display: block;
-
-    width: 12mm;
-    height: 12mm;
-
-    object-fit: contain;
-}
 
 
 

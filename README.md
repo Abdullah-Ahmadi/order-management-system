@@ -1,30 +1,20 @@
-# Order Management System (OMS)
+# Order Management System
 
-OMS is a Django and JavaScript application developed as my CS50W final project for the operational needs of **Afghanistan Beverage Industries Ltd. (ABI), the PepsiCo franchisee where I work as a Sales Clerk**. Its design reflects the practical work of recording customer orders, coordinating dispatches, calculating freight, and preparing distribution documents.
+I built this application for the order and dispatch work I handle as a Sales Clerk at Afghanistan Beverage Industries Ltd. It keeps customer orders, deliveries, transport details, and reports in one place. The backend uses Django, and the frontend uses HTML, CSS, and JavaScript.
 
-The application brings orders, transport information, customer records, and reporting into one workflow. It is intended for internal company users, with authenticated access and administrator-controlled user management.
+A user can record an order, send it in one or more dispatches, and prepare the paperwork for each delivery. The system also manages products, customers, territories, drivers, trucks, and user accounts.
 
 ## Distinctiveness and Complexity
 
-OMS addresses beverage-distribution operations rather than public online shopping. Although it contains products, prices, and orders, its central workflow is the internal coordination of customer orders and their fulfillment through one or more dispatches. It does not provide auctions, bidding, watchlists, or a public customer checkout. Its focus on transport, freight, and operational paperwork distinguishes it from the CS50W Commerce project and the Pizza ordering concept.
+This is an internal business tool. Customers do not browse a public store or buy products through a checkout page. There are no auctions, bids, social posts, or followers. The main task is to help staff handle orders after receiving them and keep track of what has been sent. Transport, freight, and delivery documents are part of the same process.
 
-The application also differs from Network, Mail, Wiki, and Search. It does not organize social posts, messages, encyclopedia entries, or search-engine queries. Instead, it connects business records across an order's operational lifecycle. My work at ABI informed the choice of entities, calculations, and printable documents, giving the project a specific real-company purpose.
+An order is not always sent in one trip. Staff can create several dispatches for it, and the application checks how many cases remain before accepting another dispatch. A dispatch item must belong to the correct order. These checks connect the order and delivery records rather than treating them as separate forms.
 
-The data model contains eleven related entities: Territory, Distributor, Product, Driver, Truck, Order, OrderItem, Dispatch, DispatchItem, PurchaseRequest, and DeliveryNote. Orders contain multiple products and can be fulfilled across several dispatches. Validation checks that dispatch items belong to the correct order and do not exceed its remaining quantities. Database constraints prevent duplicate line items and enforce one active distributor per territory. Saving related order or dispatch records uses database transactions.
+The database has eleven business models: Territory, Distributor, Product, Driver, Truck, Order, OrderItem, Dispatch, DispatchItem, PurchaseRequest, and DeliveryNote. Their relationships support the workflow. For example, each order has product rows, each dispatch refers to those rows, and a delivery note belongs to a dispatch. Constraints prevent duplicate items and allow only one active distributor per territory.
 
-Business calculations add complexity beyond basic record creation and editing. Order items store the applicable wholesale or retail price when created. Dispatch quantities and case weights determine tonnage, which selects a territory-specific freight rate. Freight is zero when both the driver and truck belong to the company. Purchase requests combine order values with freight across related dispatches, while delivery notes record delivery information separately.
+Prices and freight also need different rules. An order item stores the customer's wholesale or retail price when it is created. Product case weights determine dispatch tonnage. That weight selects the territory's freight band: below 17 tons, 17 to below 26 tons, or 26 tons and above. Freight is zero when both the driver and truck belong to the company. A purchase request combines the order value and freight from its dispatches.
 
-The frontend coordinates dynamic product rows, customer filtering by territory, and live order totals with Django forms and formsets. The system also produces A4 operational documents, daily dispatch summaries, Excel downloads, and PNG exports. These connected workflows, validations, calculations, and output formats provide the project's main complexity; framework choice and deployment alone are not the justification.
-
-## Features and Business Rules
-
-- Authentication, password resets through administrator tools, and user activation controls.
-- Order creation, editing, searching, automatic serial numbers, and draft/confirmed/cancelled statuses.
-- Multiple dispatches per order, company or external transport, and remaining-quantity validation.
-- Freight bands: below 17 tons, 17 to below 26 tons, and 26 tons or more.
-- Loading dispatches with four printed copies, purchase requests with selectable copy counts, and optional delivery notes with two copies.
-- Daily dispatch summaries with customer, territory, truck, tonnage, and product totals.
-- Management of products, distributors, territories, drivers, and trucks.
+JavaScript lets users add product rows, filter customers by territory, and see totals while entering an order. Django validates the submitted information and saves related records in transactions. The application also prepares loading dispatches, purchase requests, optional delivery notes, and daily summaries. Summaries can be exported to Excel or PNG. Handling these related records, calculations, and document formats is the main technical work in the project.
 
 ## File Guide
 
@@ -114,7 +104,6 @@ These paths are relative to `orders/static/orders/`.
 | `js/dispatch_summary.js` | Summary interactions and canvas-based PNG export. |
 | `js/purchase_request_print.js` | Purchase-request copy-count and printing behavior. |
 | `js/product_list.js`, `js/distributor_list.js`, `js/territory_list.js`, `js/driver_list.js`, `js/truck_list.js`, `js/user_list.js` | Corresponding management-list interactions and filtering. |
-| `logo/abi_logo.png` | Company branding used in documents. |
 
 ## How to Run
 
@@ -126,7 +115,7 @@ cd order-management-system
 python -m venv .venv
 ```
 
-Activate the environment:
+Activate the virtual environment using the command for your system:
 
 ```bash
 # Windows Command Prompt
@@ -136,7 +125,7 @@ Activate the environment:
 source .venv/bin/activate
 ```
 
-Install and initialize:
+Then install the packages and prepare the database:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -145,11 +134,15 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Open http://127.0.0.1:8000/ and sign in. Without `DATABASE_URL`, the application uses SQLite. Local development defaults to `DEBUG=True`.
+Open http://127.0.0.1:8000/ and sign in with the account you created. The application uses SQLite when no `DATABASE_URL` is set.
 
-For first use, create territories and freight rates, then distributors and products with prices and case weights. Add company drivers and trucks when applicable. Create an order, dispatch some or all of its quantities, and inspect the resulting documents and daily summary. Use fictional records for evaluation rather than confidential company data.
+Start by adding territories and their freight rates, then customers and products. Products need prices and case weights for the calculations. Add company drivers and trucks if needed. You can then create an order, record a dispatch, and open its documents or the daily summary.
 
-## Checks and Configuration
+## Additional Information
+
+All required Python packages are listed in `requirements.txt`. For PostgreSQL, set `DATABASE_URL`. Production also needs a private `SECRET_KEY`, `DEBUG=False`, and the correct hostname configuration. The settings support `RENDER_EXTERNAL_HOSTNAME` for Render. Keep credentials and real customer data out of the public repository.
+
+To run the existing checks:
 
 ```bash
 python manage.py check
@@ -157,12 +150,8 @@ python manage.py collectstatic --noinput
 python manage.py test
 ```
 
-Static collection is included because the configured manifest storage requires collected assets when tests render pages with debugging disabled. The existing three tests cover management/product behavior, not the full operational workflow.
+Static files must be collected for the current test configuration. The three existing tests cover the management page and product creation and activation; they do not cover every workflow.
 
-Production configuration uses `SECRET_KEY`, `DEBUG=False`, `DATABASE_URL`, and, on Render, `RENDER_EXTERNAL_HOSTNAME`. PostgreSQL support uses `dj-database-url` and `psycopg2-binary`; Gunicorn serves the application and WhiteNoise serves collected static assets. Keep secrets outside version control. `PYTHON_VERSION` is a hosting runtime setting rather than an application setting.
+The main pages support smaller screens and touch navigation. The four document print previews still need better handling on phones because their layouts are wider than the screen. Printed documents are designed for A4 paper.
 
-## Additional Information and Limitations
-
-The main interface includes mobile breakpoints, touch navigation, and scrollable tables. Print previews retain fixed A4 dimensions and still require mobile-usability verification; responsive CSS alone does not establish that every screen works on every device.
-
-Stronger concurrency controls, broader automated tests, granular operational permissions, and audit logging remain future improvements. The project documents a real company's workflow, but this README does not assert company endorsement or certify production readiness. No open-source license is currently granted.
+The public version does not include the company logo. Company names describe the business context and do not imply endorsement. Use fictional records when demonstrating the application. Further work includes more tests, stronger protection against simultaneous dispatch updates, and an audit history.

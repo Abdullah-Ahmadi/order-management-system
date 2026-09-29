@@ -166,22 +166,7 @@ body {
 }
 
 
-.delivery-logo {
-    display: flex;
 
-    align-items: center;
-    justify-content: flex-start;
-}
-
-
-.delivery-logo img {
-    display: block;
-
-    width: 23mm;
-    height: 17mm;
-
-    object-fit: contain;
-}
 
 
 .delivery-company-english {
@@ -575,8 +560,7 @@ body {
     }
 
 
-    .delivery-title,
-    .delivery-logo img {
+    .delivery-title {
         print-color-adjust: exact;
         -webkit-print-color-adjust: exact;
     }
