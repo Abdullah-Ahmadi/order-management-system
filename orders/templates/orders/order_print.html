@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -163,6 +164,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="{% static 'orders/css/print_preview.css' %}">
 </head>
 
 
@@ -192,6 +194,9 @@
          HEADER
     ================================================== -->
 
+    <p class="print-preview-hint">Swipe or scroll sideways to view the full document.</p>
+    <div class="print-preview" tabindex="0" role="region" aria-label="Order print preview">
+    <div class="order-sheet">
     <header class="header">
 
         <h1 class="company-name">
@@ -444,6 +449,8 @@
         {% now "d-M-Y H:i" %}
     </div>
 
+    </div>
+    </div>
 </div>
 
 

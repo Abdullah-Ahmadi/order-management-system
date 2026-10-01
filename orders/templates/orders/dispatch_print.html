@@ -22,6 +22,7 @@
         href="{% static 'orders/css/dispatch_print.css' %}"
     >
 
+    <link rel="stylesheet" href="{% static 'orders/css/print_preview.css' %}">
 </head>
 
 
@@ -51,6 +52,8 @@
          FOUR DISPATCH COPIES
     ====================================================== -->
 
+    <p class="print-preview-hint">Swipe or scroll sideways to view the full document.</p>
+    <div class="print-preview" tabindex="0" role="region" aria-label="Dispatch print preview">
     <main class="dispatch-sheet">
 
 
@@ -451,6 +454,7 @@
 
 
     </main>
+    </div>
 
 
 

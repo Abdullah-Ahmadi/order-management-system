@@ -1,0 +1,72 @@
+/* Keep paper-sized documents inside a scrollable screen preview. */
+.print-preview-hint {
+    display: none;
+}
+
+@media screen {
+    .print-preview {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        overflow-x: auto;
+    }
+
+    .print-preview:focus-visible {
+        outline: 2px solid #2563eb;
+        outline-offset: -2px;
+    }
+
+    .order-sheet {
+        min-width: 186mm;
+    }
+
+    .print-controls,
+    .delivery-print-controls {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 210mm;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0 12px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .print-button,
+    .delivery-print-button {
+        min-height: 44px;
+        max-width: 100%;
+        font-size: 16px;
+        line-height: 1.25;
+        white-space: normal;
+    }
+
+    .copy-control input {
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .copy-message {
+        overflow-wrap: anywhere;
+    }
+}
+
+@media screen and (max-width: 820px) {
+    .print-preview-hint {
+        display: block;
+        margin: 12px;
+        color: #4b5563;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+}
+
+@media print {
+    .print-preview,
+    .order-sheet {
+        display: contents;
+    }
+}
